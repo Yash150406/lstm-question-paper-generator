@@ -1,5 +1,6 @@
 """The seven quality filters, ranking and the fallback that fills short lists."""
 import random
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -8,9 +9,8 @@ import pandas as pd
 from qpgen.classifiers import Scorer, load_scorer
 from qpgen.config import DEFAULT_CONFIG, Config, load_config
 from qpgen.data.build_dataset import overlap, words
-from qpgen.generate import generate_raw
-from qpgen.model import QuestionLSTM
-from qpgen.tokenizer import UNK, Vocab
+from qpgen.generate import LSTMSampler
+from qpgen.tokenizer import UNK
 from qpgen.train import load_model, pick_device
 
 Result = tuple[bool, str]
@@ -22,8 +22,7 @@ class Context:
     """Everything generate_questions needs, loaded once."""
 
     cfg: Config
-    model: QuestionLSTM
-    vocab: Vocab
+    sampler: Callable[..., list[dict]]   # LSTMSampler or TrigramSampler
     scorer: Scorer
     bank: pd.DataFrame
     train_set: set[str]
@@ -36,7 +35,7 @@ def load_context(config_path: str = str(DEFAULT_CONFIG)) -> Context:
     model, vocab = load_model(cfg.path("checkpoint"), pick_device(cfg.train["device"]))
     data = cfg.path("processed_dir")
     train = pd.read_csv(data / "train.csv")
-    return Context(cfg, model, vocab, load_scorer(cfg.path("classifiers")),
+    return Context(cfg, LSTMSampler(model, vocab, cfg), load_scorer(cfg.path("classifiers")),
                    pd.read_csv(data / "questions.csv"), set(train["question"].str.lower().str.strip()))
 
 
@@ -164,8 +163,8 @@ def generate_questions(subject: str, topic: str, difficulty: str, n: int, temper
     seed = cfg.seed if seed is None else seed
     pool: list[dict] = []
     for r in range(f["max_rounds"]):
-        raw = generate_raw(ctx.model, ctx.vocab, cfg, subject, topic, difficulty,
-                           cfg.generate["candidates_per_cell"], temperature, top_k, seed + r)
+        raw = ctx.sampler(subject, topic, difficulty, cfg.generate["candidates_per_cell"],
+                          temperature, top_k, seed + r)
         pool += score(raw, ctx, topic, difficulty)
         accepted, _ = filter_candidates(pool, ctx, topic)
         if len(accepted) >= n:

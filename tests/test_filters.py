@@ -9,6 +9,7 @@ from qpgen.data.dataset import build_vocab
 from qpgen.filters import (Context, check_clean, check_difficulty, check_duplicate, check_ending,
                            check_format, check_novel, check_relevance, filter_candidates,
                            generate_questions, rank)
+from qpgen.generate import LSTMSampler
 from qpgen.model import QuestionLSTM
 from qpgen.seed import set_seed
 
@@ -86,7 +87,7 @@ def weak_context():
     set_seed(CFG.seed)
     model = QuestionLSTM.from_config({**CFG.model, "embed_dim": 16, "hidden_dim": 16}, len(vocab)).eval()
     scorer = fit_scorer(CFG, parts["train"], parts["val"])
-    return Context(CFG, model, vocab, scorer, bank, set(parts["train"]["question"].str.lower()))
+    return Context(CFG, LSTMSampler(model, vocab, CFG), scorer, bank, set(parts["train"]["question"].str.lower()))
 
 
 def test_generate_questions_falls_back_to_bank(weak_context):

@@ -2,6 +2,7 @@
 import argparse
 import random
 from collections import defaultdict
+from dataclasses import dataclass
 from functools import lru_cache
 
 import torch
@@ -78,6 +79,20 @@ def generate_raw(model: QuestionLSTM, vocab: Vocab, cfg: Config, subject: str, t
     for item in out:
         item["text"] = detokenize(item["tokens"], acronyms)
     return out
+
+
+@dataclass
+class LSTMSampler:
+    """generate_raw bound to a model, so the trigram baseline can offer the same call."""
+
+    model: QuestionLSTM
+    vocab: Vocab
+    cfg: Config
+
+    def __call__(self, subject: str, topic: str, difficulty: str, n: int, temperature: float | None = None,
+                 top_k: int | None = None, seed: int | None = None) -> list[dict]:
+        return generate_raw(self.model, self.vocab, self.cfg, subject, topic, difficulty, n,
+                            temperature, top_k, seed)
 
 
 def main(argv: list[str] | None = None) -> None:
