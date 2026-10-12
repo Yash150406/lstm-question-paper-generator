@@ -137,6 +137,7 @@ Result (all from `reports/metrics.md`):
 - No control tokens: topic accuracy falls from 0.78 to 0.03 and difficulty accuracy to 0.33 (chance), and every sample is the same question. Conditioning clearly works, so the condition vector variant was not built.
 - Temperature trades topic accuracy for novelty: 0.6 gives 0.86 and 0.23, 1.0 gives 0.71 and 0.49.
 - The copy problem is not fixed by the two planned remedies. Dropout 0.4 leaves novelty at 0.36. Hidden size 128 raises novelty to 0.73 only because it stops following the topic (topic accuracy 0.19) and repeats itself (self-BLEU 0.94). Hidden size 512 is about the same as 256.
+- Phrase check (filter 8, added after the first run): the LSTM pass rate drops from 22% to 11% and its filtered output improves, with topic accuracy 0.86 to 0.90 and relevance 0.267 to 0.290. Building 10 questions for every cell still works, with 51 of 960 coming from the bank. The trigram pass rate only moves from 28% to 25%, since a trigram model rarely produces a word pair it has not seen.
 - Human rating sheet (60 questions, 20 per source, shuffled) and key are in `reports/`. Ratings still need the student and two classmates; `python -m qpgen.evaluate --ratings a.csv b.csv c.csv` averages them.
 
 Check: `reports/` holds every expected file.
@@ -231,3 +232,6 @@ Each set scores 200 seeded hypotheses against all the other questions in the set
 
 **2026-10-12. Ablation models are trained once and reused.**
 `make eval` trains a tagged checkpoint for each ablation only if it is missing, then reuses it on later runs.
+
+**2026-10-12. Eighth filter: phrase check.**
+After the copy filter, the questions that survive are novel but often glue two topics into a term that does not exist, like "relational cover" or "archival dependency". The phrase check rejects a generated question if any pair of adjacent words never appears in a training question. Neither planned fix for copying helped (dropout 0.4 left novelty at 0.36, hidden size 128 lost the topic), and allowing training copies would have filled papers with questions the model had already seen. The check is skipped for bank and notes questions, and can be turned off with `filters.check_phrases`.
