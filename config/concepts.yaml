@@ -1,0 +1,125 @@
+# Templates are filled with concepts from the lists below.
+# {c} is one concept, {a} and {b} are a pair.
+templates:
+  easy:
+    - "Define {c} and give one example."
+    - "What do you mean by {c}?"
+    - "State the purpose of {c}."
+    - "List the key features of {c}."
+    - "Write a short note on {c}."
+  medium:
+    - "Explain {c} with an example."
+    - "Explain the significance of {c}."
+    - "Describe {c} with a neat diagram."
+    - "Explain the working of {c}."
+  hard:
+    - "Discuss {c} in detail with a suitable example."
+    - "Analyze the advantages and limitations of {c}."
+    - "Evaluate the importance of {c} in practice."
+  pair_medium:
+    - "Differentiate between {a} and {b}."
+    - "Compare {a} and {b}."
+
+dbms:
+  ER model:
+    concepts: [entity set, weak entity, relationship set, cardinality ratio, participation constraint, composite attribute, multivalued attribute, derived attribute, generalization, specialization, aggregation, ER to relational mapping, key attribute, identifying relationship, ternary relationship]
+    pairs: [[strong entity, weak entity], [generalization, specialization], [total participation, partial participation], [simple attribute, composite attribute]]
+  Relational model and keys:
+    concepts: [super key, candidate key, primary key, foreign key, referential integrity, entity integrity, relational algebra, tuple relational calculus, natural join, outer join, division operation, domain constraint, composite key, alternate key, set operations in relational algebra]
+    pairs: [[super key, candidate key], [primary key, foreign key], [relational algebra, relational calculus], [inner join, outer join]]
+  SQL queries:
+    concepts: [GROUP BY clause, HAVING clause, nested subquery, correlated subquery, view, trigger, stored procedure, aggregate function, NULL value, DDL commands, DML commands, cursor, ORDER BY clause, EXISTS operator, integrity constraints in SQL]
+    pairs: [[DELETE, TRUNCATE], [WHERE, HAVING], [view, table], [UNION, UNION ALL]]
+  Normalization:
+    concepts: [functional dependency, first normal form, second normal form, third normal form, BCNF, fourth normal form, multivalued dependency, attribute closure, canonical cover, lossless decomposition, dependency preservation, update anomaly, Armstrong's axioms, fifth normal form, partial dependency]
+    pairs: [[3NF, BCNF], [partial dependency, transitive dependency], [lossless join, lossy join], [normalization, denormalization]]
+  Transactions and ACID:
+    concepts: [atomicity, consistency, isolation, durability, transaction states, serial schedule, conflict serializability, view serializability, recoverable schedule, cascadeless schedule, precedence graph, isolation levels, dirty read, phantom read, savepoint]
+    pairs: [[conflict serializability, view serializability], [serial schedule, concurrent schedule], [COMMIT, ROLLBACK], [recoverable schedule, cascadeless schedule]]
+  Concurrency control:
+    concepts: [shared lock, exclusive lock, two phase locking, strict two phase locking, timestamp ordering, Thomas write rule, wait die scheme, wound wait scheme, validation protocol, multiversion concurrency control, intention locks, lock granularity, lock compatibility matrix, tree protocol, snapshot isolation]
+    pairs: [[shared lock, exclusive lock], [wait die, wound wait], [optimistic concurrency control, pessimistic concurrency control], [basic 2PL, strict 2PL]]
+  Indexing and B+ trees:
+    concepts: [primary index, secondary index, clustering index, dense index, sparse index, multilevel index, B+ tree, B tree, static hashing, extendible hashing, linear hashing, bitmap index, ordered index, hash index, bucket overflow]
+    pairs: [[dense index, sparse index], [B tree, B+ tree], [static hashing, dynamic hashing], [primary index, secondary index]]
+  Recovery:
+    concepts: [log based recovery, checkpoint, write ahead logging, shadow paging, deferred modification, immediate modification, undo operation, redo operation, ARIES, stable storage, fuzzy checkpoint, remote backup, transaction failure, system crash recovery, archival dump]
+    pairs: [[deferred modification, immediate modification], [shadow paging, log based recovery], [undo, redo], [steal policy, force policy]]
+
+os:
+  Process management:
+    concepts: [process control block, process states, context switch, thread, zombie process, orphan process, fork system call, interprocess communication, shared memory, message passing, dispatcher, multithreading model, system call, process creation, process termination]
+    pairs: [[process, thread], [user level thread, kernel level thread], [shared memory, message passing], [long term scheduler, short term scheduler]]
+  CPU scheduling:
+    concepts: [FCFS scheduling, SJF scheduling, round robin scheduling, priority scheduling, multilevel queue scheduling, multilevel feedback queue, turnaround time, waiting time, convoy effect, time quantum, aging, real time scheduling, shortest remaining time first, exponential averaging, processor affinity]
+    pairs: [[preemptive scheduling, non preemptive scheduling], [SJF, SRTF], [FCFS, round robin], [multilevel queue, multilevel feedback queue]]
+  Synchronization:
+    concepts: [race condition, critical section, semaphore, mutex lock, monitor, Peterson's solution, busy waiting, spinlock, condition variable, test and set instruction, bounded buffer problem, readers writers problem, dining philosophers problem, priority inversion, compare and swap instruction]
+    pairs: [[binary semaphore, counting semaphore], [semaphore, monitor], [mutex, spinlock], [busy waiting, blocking]]
+  Deadlocks:
+    concepts: [deadlock, circular wait, hold and wait, resource allocation graph, safe state, Banker's algorithm, safety algorithm, deadlock detection, deadlock recovery, deadlock prevention, wait for graph, resource ordering, resource request algorithm, no preemption condition, mutual exclusion condition]
+    pairs: [[deadlock prevention, deadlock avoidance], [deadlock, starvation], [safe state, unsafe state], [deadlock, livelock]]
+  Memory management:
+    concepts: [paging, segmentation, internal fragmentation, external fragmentation, compaction, swapping, translation lookaside buffer, page table, memory management unit, first fit allocation, hierarchical paging, inverted page table, address binding, dynamic loading, buddy system]
+    pairs: [[paging, segmentation], [internal fragmentation, external fragmentation], [logical address, physical address], [first fit, best fit]]
+  Virtual memory and paging:
+    concepts: [virtual memory, demand paging, page fault, thrashing, Belady's anomaly, FIFO page replacement, LRU page replacement, optimal page replacement, working set model, copy on write, locality of reference, frame allocation, second chance algorithm, page fault frequency, memory mapped files]
+    pairs: [[FIFO page replacement, LRU page replacement], [global replacement, local replacement], [demand paging, prepaging], [LRU, optimal replacement]]
+  File systems:
+    concepts: [file attributes, directory structure, inode, file allocation table, contiguous allocation, linked allocation, indexed allocation, free space management, hard link, symbolic link, journaling, access control list, virtual file system, file protection, directory implementation]
+    pairs: [[contiguous allocation, indexed allocation], [hard link, symbolic link], [sequential access, direct access], [single level directory, two level directory]]
+  Disk scheduling:
+    concepts: [seek time, rotational latency, FCFS disk scheduling, SSTF scheduling, SCAN scheduling, C SCAN scheduling, LOOK scheduling, RAID, swap space management, disk formatting, bad block handling, disk structure, RAID 5, disk access time, boot block]
+    pairs: [[SCAN, C SCAN], [LOOK, C LOOK], [SSTF, SCAN], [RAID 0, RAID 1]]
+
+cn:
+  OSI and TCP/IP models:
+    concepts: [OSI model, TCP/IP model, encapsulation, protocol data unit, network topology, physical layer, presentation layer, session layer, circuit switching, packet switching, transmission media, layered architecture, transport layer services, network layer services, connection oriented service]
+    pairs: [[OSI model, TCP/IP model], [circuit switching, packet switching], [LAN, WAN], [hub, switch]]
+  Data link layer:
+    concepts: [framing, bit stuffing, byte stuffing, flow control, stop and wait protocol, go back N ARQ, selective repeat ARQ, sliding window protocol, piggybacking, HDLC, PPP, MAC address, error control, LLC sublayer, spanning tree protocol]
+    pairs: [[go back N, selective repeat], [bit stuffing, byte stuffing], [flow control, error control], [HDLC, PPP]]
+  Error detection:
+    concepts: [parity check, two dimensional parity, checksum, CRC, Hamming code, Hamming distance, burst error, single bit error, forward error correction, generator polynomial, block coding, redundancy, internet checksum, minimum Hamming distance, cyclic codes]
+    pairs: [[error detection, error correction], [single bit error, burst error], [checksum, CRC], [parity check, Hamming code]]
+  MAC protocols:
+    concepts: [pure ALOHA, slotted ALOHA, CSMA, CSMA/CD, CSMA/CA, token passing, binary exponential backoff, hidden terminal problem, FDMA, TDMA, CDMA, polling, persistence methods of CSMA, Ethernet frame format, RTS and CTS]
+    pairs: [[pure ALOHA, slotted ALOHA], [CSMA/CD, CSMA/CA], [TDMA, FDMA], [polling, token passing]]
+  IP addressing and subnetting:
+    concepts: [IPv4 addressing, IPv6 addressing, subnet mask, subnetting, CIDR, NAT, ARP, DHCP, ICMP, IPv4 header, fragmentation, VLSM, supernetting, private IP address, IPv6 header]
+    pairs: [[IPv4, IPv6], [classful addressing, classless addressing], [subnetting, supernetting], [ARP, RARP]]
+  Routing algorithms:
+    concepts: [distance vector routing, link state routing, count to infinity problem, Dijkstra's algorithm, Bellman Ford algorithm, RIP, OSPF, BGP, autonomous system, split horizon, flooding, hierarchical routing, poison reverse, path vector routing, multicast routing]
+    pairs: [[distance vector routing, link state routing], [static routing, dynamic routing], [RIP, OSPF], [intra domain routing, inter domain routing]]
+  Transport layer:
+    concepts: [TCP, UDP, three way handshake, TCP header, flow control in TCP, congestion control, slow start, token bucket algorithm, leaky bucket algorithm, socket, retransmission timer, silly window syndrome, TCP connection termination, fast retransmit, port numbers]
+    pairs: [[TCP, UDP], [leaky bucket, token bucket], [flow control, congestion control], [slow start, congestion avoidance]]
+  Application layer protocols:
+    concepts: [DNS, HTTP, FTP, SMTP, POP3, IMAP, cookies, web caching, SNMP, MIME, persistent HTTP, HTTPS, DNS resource records, HTTP status codes, web proxy server]
+    pairs: [[POP3, IMAP], [persistent HTTP, non persistent HTTP], [HTTP, HTTPS], [recursive DNS query, iterative DNS query]]
+
+dsa:
+  Arrays and linked lists:
+    concepts: [array, singly linked list, doubly linked list, circular linked list, sparse matrix, dynamic array, row major order, header node, polynomial representation, linked list reversal, two dimensional array, generalized linked list, loop detection in a linked list, merging sorted linked lists, column major order]
+    pairs: [[array, linked list], [singly linked list, doubly linked list], [row major order, column major order], [static array, dynamic array]]
+  Stacks and queues:
+    concepts: [stack, queue, circular queue, priority queue, deque, infix to postfix conversion, postfix evaluation, stack overflow, recursion using stack, balanced parentheses check, queue using linked list, Tower of Hanoi, input restricted deque, queue using two stacks, prefix notation]
+    pairs: [[stack, queue], [linear queue, circular queue], [infix notation, postfix notation], [queue, priority queue]]
+  Trees and BST:
+    concepts: [binary tree, binary search tree, AVL tree, threaded binary tree, tree traversal, complete binary tree, expression tree, red black tree, Huffman coding, B tree, level order traversal, balance factor, BST deletion, tree construction from traversals, binary tree representation]
+    pairs: [[binary tree, binary search tree], [AVL tree, red black tree], [complete binary tree, full binary tree], [inorder traversal, preorder traversal]]
+  Heaps:
+    concepts: [binary heap, max heap, min heap, heapify, heap sort, priority queue using heap, binomial heap, Fibonacci heap, decrease key, extract min, bottom up heap construction, d ary heap, array representation of a heap, k largest elements using a heap, heap insertion]
+    pairs: [[max heap, min heap], [binary heap, binary search tree], [binomial heap, Fibonacci heap], [heap sort, quick sort]]
+  Graphs:
+    concepts: [adjacency matrix, adjacency list, breadth first search, depth first search, spanning tree, Prim's algorithm, Kruskal's algorithm, Dijkstra's algorithm, topological sorting, Floyd Warshall algorithm, strongly connected component, union find, Bellman Ford algorithm, cycle detection in graphs, minimum spanning tree]
+    pairs: [[BFS, DFS], [Prim's algorithm, Kruskal's algorithm], [adjacency matrix, adjacency list], [directed graph, undirected graph]]
+  Sorting:
+    concepts: [bubble sort, insertion sort, selection sort, merge sort, quick sort, radix sort, counting sort, shell sort, bucket sort, external sorting, stable sorting, in place sorting, pivot selection, selection sort analysis, lower bound for comparison sorting]
+    pairs: [[quick sort, merge sort], [stable sort, unstable sort], [insertion sort, selection sort], [internal sorting, external sorting]]
+  Hashing and searching:
+    concepts: [hash function, collision resolution, linear probing, quadratic probing, double hashing, separate chaining, load factor, rehashing, binary search, linear search, interpolation search, perfect hashing, mid square method, clustering in linear probing, folding method]
+    pairs: [[open addressing, separate chaining], [linear search, binary search], [linear probing, quadratic probing], [static hashing, dynamic hashing]]
+  Dynamic programming:
+    concepts: [memoization, tabulation, optimal substructure, overlapping subproblems, 0/1 knapsack problem, longest common subsequence, matrix chain multiplication, coin change problem, edit distance, optimal binary search tree, multistage graph, longest increasing subsequence, Fibonacci using dynamic programming, principle of optimality, travelling salesman problem]
+    pairs: [[dynamic programming, divide and conquer], [dynamic programming, greedy method], [memoization, tabulation], [0/1 knapsack, fractional knapsack]]
