@@ -17,6 +17,15 @@ paths:
   classifiers: artifacts/classifiers.pkl
   classifier_report: reports/classifier_accuracy.json
   baseline_report: reports/baseline.json
+  metrics_json: reports/metrics.json
+  metrics_md: reports/metrics.md
+  perplexity_bar: reports/perplexity_bar.png
+  difficulty_confusion: reports/difficulty_confusion.png
+  relevance_by_topic: reports/relevance_by_topic.png
+  samples_md: reports/samples.md
+  rating_sheet: reports/human_rating_sheet.csv
+  rating_key: reports/human_rating_key.csv
+  human_ratings_md: reports/human_ratings.md
 
 data:
   min_words: 5
@@ -103,3 +112,7 @@ eval:
   baseline_min_cell: 20
   backoff_alpha: 0.4
   human_per_source: 20
+  self_bleu_sample: 200     # hypotheses per set; each is scored against all the others
+  ablation_dropout: 0.4
+  samples_per_subject: 10
+  rejected_per_subject: 2
