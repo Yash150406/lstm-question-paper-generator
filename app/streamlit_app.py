@@ -164,7 +164,9 @@ def try_tab(ctx) -> None:
     n = c4.number_input("Samples", 5, 100, 20, key="try_n")
     if st.button("Sample"):
         raw = score(ctx.sampler(subject, topic, level, int(n), seed=uid()), ctx, topic, level)
-        passed, rejected = filter_candidates(raw, ctx, topic)
+        st.session_state["trial"] = filter_candidates(raw, ctx, topic)
+    if "trial" in st.session_state:      # kept in state so the result survives later reruns
+        passed, rejected = st.session_state["trial"]
         left, right = st.columns(2)
         left.markdown(f"**Passed ({len(passed)})**")
         left.dataframe(pd.DataFrame([{"question": c["text"], "relevance": round(c["relevance"], 2),
@@ -197,7 +199,8 @@ def main() -> None:
         st.stop()
     ctx = get_context()
     sidebar(ctx)
-    paper, trial, report = st.tabs(["Paper", "Try the model", "Report"])
+    # A key makes Streamlit remember the open tab, so a button press does not jump back to Paper.
+    paper, trial, report = st.tabs(["Paper", "Try the model", "Report"], key="tab")
     with paper:
         paper_tab()
     with trial:
