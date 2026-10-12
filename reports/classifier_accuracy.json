@@ -1,0 +1,41 @@
+{
+  "test": {
+    "topic_accuracy": 0.8464,
+    "difficulty_accuracy": 0.9913
+  },
+  "test_size": 345,
+  "relevance_thresholds": {
+    "ER model": 0.148,
+    "Relational model and keys": 0.194,
+    "SQL queries": 0.1181,
+    "Normalization": 0.1317,
+    "Transactions and ACID": 0.1837,
+    "Concurrency control": 0.172,
+    "Indexing and B+ trees": 0.2056,
+    "Recovery": 0.1183,
+    "Process management": 0.1534,
+    "CPU scheduling": 0.1715,
+    "Synchronization": 0.0917,
+    "Deadlocks": 0.1857,
+    "Memory management": 0.1421,
+    "Virtual memory and paging": 0.1837,
+    "File systems": 0.2062,
+    "Disk scheduling": 0.1463,
+    "OSI and TCP/IP models": 0.1573,
+    "Data link layer": 0.1716,
+    "Error detection": 0.1706,
+    "MAC protocols": 0.1601,
+    "IP addressing and subnetting": 0.1549,
+    "Routing algorithms": 0.1592,
+    "Transport layer": 0.2009,
+    "Application layer protocols": 0.1233,
+    "Arrays and linked lists": 0.2018,
+    "Stacks and queues": 0.1688,
+    "Trees and BST": 0.137,
+    "Heaps": 0.2148,
+    "Graphs": 0.1774,
+    "Sorting": 0.1964,
+    "Hashing and searching": 0.1614,
+    "Dynamic programming": 0.1018
+  }
+}
