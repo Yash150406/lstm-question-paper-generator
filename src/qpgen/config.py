@@ -29,6 +29,13 @@ class Config:
         """Return an absolute path for a key under `paths`."""
         return ROOT / self.paths[name]
 
+    def subject_key(self, name_or_key: str) -> str:
+        """Accept 'DBMS', 'dbms' or 'Operating Systems' and return the short key."""
+        for key, info in self.subjects.items():
+            if name_or_key.lower() in (key, info["name"].lower()):
+                return key
+        raise KeyError(f"Unknown subject: {name_or_key}")
+
 
 def load_config(path: str | Path = DEFAULT_CONFIG) -> Config:
     """Read the main YAML and merge in subjects_topics.yaml."""
