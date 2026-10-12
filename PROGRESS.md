@@ -70,12 +70,18 @@ Result: 4,800 raw samples (50 for each of the 96 subject, topic and difficulty c
 Check: no output holds a control token, `<pad>`, `<bos>` or `<unk>`.
 
 ## Phase 6: Filters and classifiers
-- [ ] TF-IDF topic centroids and difficulty logistic regression, saved to `classifiers.pkl`
-- [ ] Classifier accuracy on real test questions
-- [ ] Per-topic relevance threshold from the validation percentile
-- [ ] Seven filters, each returning a pass flag and a reason
-- [ ] Fallback rounds and the `from_bank` fill
-- [ ] One passing and one failing test per filter
+- [x] TF-IDF topic centroids and difficulty logistic regression, saved to `classifiers.pkl`
+- [x] Classifier accuracy on real test questions
+- [x] Per-topic relevance threshold from the validation percentile
+- [x] Seven filters, each returning a pass flag and a reason
+- [x] Fallback rounds and the `from_bank` fill
+- [x] One passing and one failing test per filter
+
+Result:
+- On the 345 real test questions the nearest-centroid topic classifier scores 84.6% and the difficulty classifier 99.1% (`reports/classifier_accuracy.json`). Difficulty is easy to predict because labels and templates both follow the opening verb, so this number says more about the data than the classifier.
+- Topic thresholds (10th percentile on validation) range from 0.09 to 0.21.
+- `generate_questions` returned 10 questions for all 96 cells in 9.8 s on the GPU, all generated, none from the bank.
+- One round of 50 raw candidates per cell: 19.6% pass all filters. Of the rejects, 3,010 of 4,800 candidates are exact copies of training questions, 528 are off topic and 300 are too close to an accepted question. The copy rate is the main weakness so far and is looked at again in Phase 10 (dropout 0.4 and hidden size 128 are the planned fixes).
 
 Check: `generate_questions` returns the requested number for every cell.
 
@@ -173,3 +179,9 @@ With the cap at 40, validation loss was still dropping at the last epoch (perple
 
 **2026-10-12. Extra training runs use a tag.**
 `python -m qpgen.train --tag <name>` writes `model_best_<name>.pt` and `training_log_<name>.csv` so repeat runs, the CPU timing run and later ablations do not overwrite the main model.
+
+**2026-10-12. Topic classifier is the nearest TF-IDF centroid.**
+The same centroids give the relevance score for filter 6 and the topic prediction for evaluation, so there is one model to explain instead of two. A logistic regression for topic was the alternative.
+
+**2026-10-12. Fallback re-filters the whole candidate pool.**
+Each extra round adds 50 candidates to a pool and the filters run again over the pool, so a question rejected only as a near duplicate in round one can still be picked later. After 5 rounds the pool is filtered once more with thresholds relaxed by 20%, then the bank fills any gap.
