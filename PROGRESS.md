@@ -125,11 +125,19 @@ Result:
 Check: app runs, a paper generates for each subject, all three file types download. `paper --from-file` on DBMS notes gives a 70-mark DBMS paper on the matching topics.
 
 ## Phase 10: Evaluation
-- [ ] Every metric for the LSTM, the trigram and the real questions
-- [ ] Three generation seeds, mean and standard deviation
-- [ ] Ablations
-- [ ] Plots, `metrics.md` and `samples.md`
-- [ ] Blind human rating sheet and a script that averages the scores
+- [x] Every metric for the LSTM, the trigram and the real questions
+- [x] Three generation seeds, mean and standard deviation
+- [x] Ablations
+- [x] Plots, `metrics.md` and `samples.md`
+- [x] Blind human rating sheet and a script that averages the scores
+
+Result (all from `reports/metrics.md`):
+- Perplexity: LSTM 3.81 validation and 4.02 test, trigram 10.17 and 9.34. The LSTM fits real questions far better.
+- The trigram wins on raw novelty (0.61 against 0.37), filter pass rate (28% against 22%) and topic accuracy (0.93 against 0.80). The LSTM wins on raw difficulty accuracy (0.999 against 0.73) and on diversity after filtering (distinct-2 0.41 against 0.36, self-BLEU 0.53 against 0.56).
+- No control tokens: topic accuracy falls from 0.78 to 0.03 and difficulty accuracy to 0.33 (chance), and every sample is the same question. Conditioning clearly works, so the condition vector variant was not built.
+- Temperature trades topic accuracy for novelty: 0.6 gives 0.86 and 0.23, 1.0 gives 0.71 and 0.49.
+- The copy problem is not fixed by the two planned remedies. Dropout 0.4 leaves novelty at 0.36. Hidden size 128 raises novelty to 0.73 only because it stops following the topic (topic accuracy 0.19) and repeats itself (self-BLEU 0.94). Hidden size 512 is about the same as 256.
+- Human rating sheet (60 questions, 20 per source, shuffled) and key are in `reports/`. Ratings still need the student and two classmates; `python -m qpgen.evaluate --ratings a.csv b.csv c.csv` averages them.
 
 Check: `reports/` holds every expected file.
 
@@ -214,3 +222,12 @@ Scoring a whole set of notes against each topic at once let the main topic hide 
 
 **2026-10-12. Removing a question blocks downloads until the section is filled.**
 Exported papers must always add up to the declared marks, so after a Remove the app shows the shortfall and a Fill button instead of the download buttons.
+
+**2026-10-12. Hidden size ablations change the embedding size too.**
+Weight tying needs the embedding and hidden sizes to match, so the 128 and 512 runs use 128 and 512 for both.
+
+**2026-10-12. Self-BLEU is computed on a sample.**
+Each set scores 200 seeded hypotheses against all the other questions in the set instead of every question, which keeps `make eval` to a few minutes. The setting is `eval.self_bleu_sample`.
+
+**2026-10-12. Ablation models are trained once and reused.**
+`make eval` trains a tagged checkpoint for each ablation only if it is missing, then reuses it on later runs.
