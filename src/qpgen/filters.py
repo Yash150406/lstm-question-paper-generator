@@ -5,12 +5,14 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 import pandas as pd
+import yaml
 
 from qpgen.classifiers import Scorer, load_scorer
 from qpgen.config import DEFAULT_CONFIG, Config, load_config
 from qpgen.data.build_dataset import overlap, words
 from qpgen.generate import LSTMSampler
 from qpgen.tokenizer import UNK
+from qpgen.upload import upload_similarity
 from qpgen.train import load_model, pick_device
 
 Result = tuple[bool, str]
@@ -133,8 +135,26 @@ def score(cands: list[dict], ctx: Context, topic: str, level: str) -> list[dict]
 
 
 def rank(accepted: list[dict]) -> list[dict]:
-    """Most relevant first, ties broken by average log probability."""
-    return sorted(accepted, key=lambda c: (-c["relevance"], -c["avg_logprob"]))
+    """Most relevant first, ties broken by average log probability. With an upload, relevance is
+    averaged with similarity to the notes."""
+    def key(c: dict) -> tuple:
+        rel = (c["relevance"] + c["upload_sim"]) / 2 if "upload_sim" in c else c["relevance"]
+        return -rel, -c["avg_logprob"]
+    return sorted(accepted, key=key)
+
+
+def notes_fill(ctx: Context, topic: str, level: str, have: list[dict], need: int,
+               upload: dict, seed: int) -> list[dict]:
+    """Template questions built from key terms in the uploaded notes, marked from_notes."""
+    templates = yaml.safe_load(ctx.cfg.path("concepts").read_text(encoding="utf-8"))["templates"][level]
+    rng = random.Random(seed)
+    texts = [rng.choice(templates).format(c=term) for term in upload["key_terms"].get(topic, [])]
+    texts = [t[:1].upper() + t[1:] for t in texts]
+    accepted, _ = filter_candidates(score([{"text": t, "avg_logprob": 0.0} for t in texts], ctx, topic, level),
+                                    ctx, topic, relax=ctx.cfg.filters["relax_factor"])
+    taken = {h["text"].lower() for h in have}
+    picks = [c for c in accepted if c["text"].lower() not in taken][:need]
+    return [{**c, "avg_logprob": None, "origin": "from_notes"} for c in picks]
 
 
 def bank_fill(ctx: Context, subject: str, topic: str, level: str, have: list[dict],
@@ -156,8 +176,10 @@ def clean_output(c: dict) -> dict:
 
 
 def generate_questions(subject: str, topic: str, difficulty: str, n: int, temperature: float | None = None,
-                       top_k: int | None = None, seed: int | None = None, ctx: Context | None = None) -> list[dict]:
-    """n filtered questions for one cell, with fallback rounds, relaxed thresholds and bank fill."""
+                       top_k: int | None = None, seed: int | None = None, ctx: Context | None = None,
+                       upload: dict | None = None) -> list[dict]:
+    """n filtered questions for one cell, with fallback rounds, relaxed thresholds and bank fill.
+    upload is {"text": ..., "key_terms": {topic: [...]}} when the paper comes from notes."""
     ctx = ctx or load_context()
     cfg, f = ctx.cfg, ctx.cfg.filters
     seed = cfg.seed if seed is None else seed
@@ -171,7 +193,12 @@ def generate_questions(subject: str, topic: str, difficulty: str, n: int, temper
             break
     else:
         accepted, _ = filter_candidates(pool, ctx, topic, relax=f["relax_factor"])
+    if upload and accepted:
+        sims = upload_similarity([c["text"] for c in accepted], upload["text"], ctx.scorer)
+        accepted = [{**c, "upload_sim": float(v)} for c, v in zip(accepted, sims)]
     chosen = [{**c, "origin": "generated"} for c in rank(accepted)[:n]]
+    if upload and len(chosen) < n:
+        chosen += notes_fill(ctx, topic, difficulty, chosen, n - len(chosen), upload, seed)
     if len(chosen) < n:
         chosen += bank_fill(ctx, subject, topic, difficulty, chosen, n - len(chosen), seed)
     return [clean_output(c) for c in chosen]
