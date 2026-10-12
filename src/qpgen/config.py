@@ -21,6 +21,7 @@ class Config:
     generate: dict
     classifiers: dict
     filters: dict
+    upload: dict
     paper: dict
     eval: dict
     subjects: dict

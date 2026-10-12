@@ -76,6 +76,13 @@ filters:
   max_rounds: 5
   relax_factor: 0.8
 
+upload:
+  min_subject_score: 0.05  # below this the material is treated as unsupported
+  max_topics: 4
+  min_topic_share: 0.15     # a topic needs this share of on-topic sentences to be picked
+  key_terms_per_topic: 5
+  max_name_words: 8        # inputs this short are tried as a typed subject or topic name first
+
 paper:
   institute: "MMCOE"
   exam_title: "Semester Examination"
