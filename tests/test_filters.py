@@ -6,8 +6,8 @@ from qpgen.classifiers import fit_scorer
 from qpgen.config import load_config
 from qpgen.data.build_dataset import build, split
 from qpgen.data.dataset import build_vocab
-from qpgen.filters import (Context, check_clean, check_difficulty, check_duplicate, check_ending,
-                           check_format, check_novel, check_relevance, filter_candidates,
+from qpgen.filters import (Context, bigrams, check_clean, check_difficulty, check_duplicate, check_ending,
+                           check_format, check_novel, check_phrases, check_relevance, filter_candidates,
                            generate_questions, rank)
 from qpgen.generate import LSTMSampler
 from qpgen.model import QuestionLSTM
@@ -62,8 +62,16 @@ def test_difficulty():
     assert not check_difficulty({"difficulty_prob": 0.2}, 0.4)[0]
 
 
+def test_phrases():
+    known = bigrams(["Define relational algebra.", "What is a canonical cover?"])
+    assert check_phrases(q("Define relational algebra."), known)[0]
+    ok, reason = check_phrases(q("Define relational cover."), known)
+    assert not ok and "relational cover" in reason
+
+
 def test_filter_candidates_reports_first_failing_reason():
-    ctx = SimpleNamespace(cfg=CFG, scorer=SimpleNamespace(thresholds={"Deadlocks": 0.2}), train_set=set())
+    ctx = SimpleNamespace(cfg=CFG, scorer=SimpleNamespace(thresholds={"Deadlocks": 0.2}), train_set=set(),
+                          known_bigrams=bigrams(["What is a resource allocation graph in deadlocks?"]))
     good = q("What is a resource allocation graph in deadlocks?", relevance=0.5, difficulty_prob=0.9)
     off_topic = q("What is a resource ordering scheme for printers?", relevance=0.05, difficulty_prob=0.9)
     short = q("Define it.", relevance=0.9, difficulty_prob=0.9)

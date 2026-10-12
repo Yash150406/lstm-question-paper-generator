@@ -226,7 +226,7 @@ def write_samples(first: dict, cfg: Config, path) -> None:
     raw, acc, rej = first["LSTM"]
     rng = random.Random(cfg.seed)
     keep, drop = cfg.eval["samples_per_subject"] - cfg.eval["rejected_per_subject"], cfg.eval["rejected_per_subject"]
-    lines = ["# Sample questions", "", f"LSTM output, seed {cfg.seed}. Accepted questions passed all seven filters.", ""]
+    lines = ["# Sample questions", "", f"LSTM output, seed {cfg.seed}. Accepted questions passed all seven filters and the phrase check.", ""]
     for info in cfg.subjects.values():
         lines += [f"## {info['name']}", "", "| Topic | Difficulty | Question | Result |", "| --- | --- | --- | --- |"]
         for c in rng.sample([c for c in acc if c["subject"] == info["name"]], keep):
@@ -275,7 +275,7 @@ def write_metrics_md(result: dict, cfg: Config) -> None:
     lines = ["# Evaluation", "",
              f"{cfg.eval['candidates_per_cell']} raw candidates per cell for each of the {len(cells(cfg))} cells, "
              f"seeds {', '.join(map(str, cfg.eval['seeds']))}. Values are mean ± standard deviation over seeds. "
-             "Filtered means the candidates that pass all seven filters.", "",
+             "Filtered means the candidates that pass all seven filters and the phrase check.", "",
              "## Perplexity", "", "| Model | Validation | Test |", "| --- | --- | --- |"]
     lines += [f"| {m} | {ppl[m]['val']} | {ppl[m]['test']} |" for m in ("LSTM", "Trigram")]
     lines += ["", "## Generated questions", "", "| Metric | " + " | ".join(cols) + " | Real test |",

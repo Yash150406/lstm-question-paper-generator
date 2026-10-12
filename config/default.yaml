@@ -84,6 +84,7 @@ filters:
   min_difficulty_prob: 0.4
   max_rounds: 5
   relax_factor: 0.8
+  check_phrases: true   # 8th filter: every word pair must appear in a training question
 
 upload:
   min_subject_score: 0.05  # below this the material is treated as unsupported

@@ -1,7 +1,7 @@
 """The seven quality filters, ranking and the fallback that fills short lists."""
 import random
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 
 import pandas as pd
@@ -28,6 +28,7 @@ class Context:
     scorer: Scorer
     bank: pd.DataFrame
     train_set: set[str]
+    known_bigrams: set[tuple[str, str]] = field(default_factory=set)
 
 
 @lru_cache
@@ -38,7 +39,13 @@ def load_context(config_path: str = str(DEFAULT_CONFIG)) -> Context:
     data = cfg.path("processed_dir")
     train = pd.read_csv(data / "train.csv")
     return Context(cfg, LSTMSampler(model, vocab, cfg), load_scorer(cfg.path("classifiers")),
-                   pd.read_csv(data / "questions.csv"), set(train["question"].str.lower().str.strip()))
+                   pd.read_csv(data / "questions.csv"), set(train["question"].str.lower().str.strip()),
+                   bigrams(train["question"]))
+
+
+def bigrams(questions) -> set[tuple[str, str]]:
+    """Every pair of adjacent words seen in the given questions."""
+    return {pair for q in questions for pair in zip(words(q), words(q)[1:])}
 
 
 def check_format(c: dict, f: dict) -> Result:
@@ -111,15 +118,28 @@ def check_difficulty(c: dict, min_prob: float) -> Result:
     return True, ""
 
 
-def filter_candidates(cands: list[dict], ctx: Context, topic: str, relax: float = 1.0) -> tuple[list, list]:
-    """Run the seven filters in order. Returns accepted and rejected (with reason)."""
+def check_phrases(c: dict, known: set[tuple[str, str]]) -> Result:
+    """Every pair of adjacent words has been seen in a training question. Catches mash-ups such as
+    "relational cover" that are novel only because the model glued two topics together."""
+    ws = words(c["text"])
+    unseen = [f"{a} {b}" for a, b in zip(ws, ws[1:]) if (a, b) not in known]
+    if unseen:
+        return False, f"unseen phrase '{unseen[0]}'"
+    return True, ""
+
+
+def filter_candidates(cands: list[dict], ctx: Context, topic: str, relax: float = 1.0,
+                      phrases: bool = True) -> tuple[list, list]:
+    """Run the seven filters, then the phrase check, in order. Returns accepted and rejected (with reason).
+    phrases=False skips the phrase check, for questions that are not model output."""
     f = ctx.cfg.filters
     threshold, min_prob = ctx.scorer.thresholds[topic] * relax, f["min_difficulty_prob"] * relax
     accepted, rejected = [], []
     for c in cands:
         checks = (lambda: check_format(c, f), lambda: check_clean(c, f), lambda: check_ending(c, f),
                   lambda: check_novel(c, f, ctx.train_set), lambda: check_duplicate(c, f, accepted),
-                  lambda: check_relevance(c, threshold), lambda: check_difficulty(c, min_prob))
+                  lambda: check_relevance(c, threshold), lambda: check_difficulty(c, min_prob),
+                  lambda: check_phrases(c, ctx.known_bigrams) if phrases and f["check_phrases"] else (True, ""))
         reason = next((r for ok, r in (check() for check in checks) if not ok), None)
         (rejected if reason else accepted).append({**c, "reason": reason} if reason else c)
     return accepted, rejected
@@ -151,7 +171,7 @@ def notes_fill(ctx: Context, topic: str, level: str, have: list[dict], need: int
     texts = [rng.choice(templates).format(c=term) for term in upload["key_terms"].get(topic, [])]
     texts = [t[:1].upper() + t[1:] for t in texts]
     accepted, _ = filter_candidates(score([{"text": t, "avg_logprob": 0.0} for t in texts], ctx, topic, level),
-                                    ctx, topic, relax=ctx.cfg.filters["relax_factor"])
+                                    ctx, topic, relax=ctx.cfg.filters["relax_factor"], phrases=False)
     taken = {h["text"].lower() for h in have}
     picks = [c for c in accepted if c["text"].lower() not in taken][:need]
     return [{**c, "avg_logprob": None, "origin": "from_notes"} for c in picks]
