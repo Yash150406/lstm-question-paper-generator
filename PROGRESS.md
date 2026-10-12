@@ -45,12 +45,17 @@ Result: 1,289,112 parameters with the 920 token vocab. Initial loss on a real tr
 Check: `pytest tests/test_model.py` passes.
 
 ## Phase 4: Training
-- [ ] `train.py` with Adam, clipping, LR scheduler and early stopping
-- [ ] Training log CSV and loss curve
-- [ ] Best checkpoint with weights, model config and vocabulary
-- [ ] Full training run, time and best validation perplexity recorded
-- [ ] One CPU training run timed for the report, next to the GPU time
-- [ ] Two GPU runs with seed 42 give the same validation loss
+- [x] `train.py` with Adam, clipping, LR scheduler and early stopping
+- [x] Training log CSV and loss curve
+- [x] Best checkpoint with weights, model config and vocabulary
+- [x] Full training run, time and best validation perplexity recorded
+- [x] One CPU training run timed for the report, next to the GPU time
+- [x] Two GPU runs with seed 42 give the same validation loss
+
+Result (from `reports/`):
+- GPU (RTX 4050): best epoch 72 of 77, val loss 1.337, val perplexity 3.81, 36.4 s.
+- Repeat GPU run with seed 42: identical log and identical weights.
+- CPU: best epoch 68 of 73, val loss 1.309, val perplexity 3.70, 251 s (about 4 minutes). CPU and GPU kernels round differently, so the two runs drift apart slightly. The GPU run is the main model.
 
 Check: validation loss falls then flattens. `model_best.pt` loads and runs.
 
@@ -160,3 +165,9 @@ The parameter estimate assumed a vocabulary near 8,000 words. The training split
 
 **2026-10-12. Overfit check uses one question per topic.**
 If two questions share the same subject, topic and difficulty and start the same way, no model can tell which one comes next, so the loss can never reach zero. The overfit test picks one medium question from each of the 32 topics so every control prefix is unique, and turns dropout off for that test.
+
+**2026-10-12. Max epochs raised from 40 to 100.**
+With the cap at 40, validation loss was still dropping at the last epoch (perplexity 4.96), so training never reached the point where it flattens and early stopping never fired. With a cap of 100, early stopping ends the run at epoch 77 and the best checkpoint is from epoch 72. Patience, learning rate and the scheduler are unchanged.
+
+**2026-10-12. Extra training runs use a tag.**
+`python -m qpgen.train --tag <name>` writes `model_best_<name>.pt` and `training_log_<name>.csv` so repeat runs, the CPU timing run and later ablations do not overwrite the main model.
