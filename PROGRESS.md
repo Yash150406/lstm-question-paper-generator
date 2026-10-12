@@ -35,10 +35,12 @@ Result: vocab of 920 tokens (4 special, 39 control, 877 words seen at least twic
 Check: three printed sequences start with the control tokens. Unknown-word rate on validation printed, looked into if above 5%.
 
 ## Phase 3: Model
-- [ ] `QuestionLSTM`
-- [ ] Tests for output shapes and weight tying, parameter count printed
-- [ ] Test that initial loss is close to ln(vocab size)
-- [ ] Test that the model overfits 32 questions to near zero loss
+- [x] `QuestionLSTM`
+- [x] Tests for output shapes and weight tying, parameter count printed
+- [x] Test that initial loss is close to ln(vocab size)
+- [x] Test that the model overfits 32 questions to near zero loss
+
+Result: 1,289,112 parameters with the 920 token vocab. Initial loss on a real training batch is 6.8240 against ln(920) = 6.8244. The 32 question batch overfits to under 0.05 loss in 300 Adam steps.
 
 Check: `pytest tests/test_model.py` passes.
 
@@ -152,3 +154,9 @@ The import is in place (`data.use_mmlu`), but only 8 stems from the two computer
 
 **2026-10-12. Control-token targets are masked by swapping them for `<pad>`.**
 The dataset replaces control-token targets with the pad id, so a single `ignore_index` in the loss covers both pad and control positions. Alternative was a separate mask tensor, which is more code for the same result.
+
+**2026-10-12. Model is about 1.3M parameters, not 2.5M.**
+The parameter estimate assumed a vocabulary near 8,000 words. The training split only has 877 words seen twice or more, so the embedding (tied with the decoder) is much smaller. The LSTM layers themselves are the planned 2 x 256.
+
+**2026-10-12. Overfit check uses one question per topic.**
+If two questions share the same subject, topic and difficulty and start the same way, no model can tell which one comes next, so the loss can never reach zero. The overfit test picks one medium question from each of the 32 topics so every control prefix is unique, and turns dropout off for that test.
