@@ -69,11 +69,11 @@ def train_epoch(model: QuestionLSTM, loader: DataLoader, opt: torch.optim.Optimi
     return sum(losses) / len(losses)
 
 
-def make_loaders(cfg: Config, vocab: Vocab) -> tuple[DataLoader, DataLoader]:
+def make_loaders(cfg: Config, vocab: Vocab, use_controls: bool = True) -> tuple[DataLoader, DataLoader]:
     """Shuffled train loader with a seeded generator and an ordered validation loader."""
     data = cfg.path("processed_dir")
-    train_ds = QuestionDataset(pd.read_csv(data / "train.csv"), vocab, cfg)
-    val_ds = QuestionDataset(pd.read_csv(data / "val.csv"), vocab, cfg)
+    train_ds = QuestionDataset(pd.read_csv(data / "train.csv"), vocab, cfg, use_controls)
+    val_ds = QuestionDataset(pd.read_csv(data / "val.csv"), vocab, cfg, use_controls)
     gen = torch.Generator().manual_seed(cfg.seed)
     bs = cfg.train["batch_size"]
     return (DataLoader(train_ds, bs, shuffle=True, collate_fn=collate_fn, generator=gen),
@@ -120,13 +120,14 @@ def write_log(rows: list[dict], path: Path) -> None:
         writer.writerows(rows)
 
 
-def fit(cfg: Config, device: torch.device, tag: str = "", model_cfg: dict | None = None) -> list[dict]:
+def fit(cfg: Config, device: torch.device, tag: str = "", model_cfg: dict | None = None,
+        use_controls: bool = True) -> list[dict]:
     """Full training run with LR schedule and early stopping. Returns the epoch log."""
     set_seed(cfg.seed)
     model_cfg = model_cfg or cfg.model
     vocab = build_vocab(cfg, pd.read_csv(cfg.path("processed_dir") / "train.csv"))
     vocab.save(tagged(cfg.path("vocab"), tag))
-    train_dl, val_dl = make_loaders(cfg, vocab)
+    train_dl, val_dl = make_loaders(cfg, vocab, use_controls)
     model = QuestionLSTM.from_config(model_cfg, len(vocab)).to(device)
     t = cfg.train
     opt = torch.optim.Adam(model.parameters(), lr=t["lr"])

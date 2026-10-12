@@ -11,7 +11,7 @@ import yaml
 from qpgen.config import DEFAULT_CONFIG, Config, load_config
 from qpgen.data.dataset import to_tokens
 from qpgen.model import QuestionLSTM
-from qpgen.tokenizer import BOS_ID, EOS_ID, PAD_ID, UNK_ID, Vocab, detokenize
+from qpgen.tokenizer import BOS, BOS_ID, EOS_ID, PAD_ID, UNK_ID, Vocab, detokenize
 from qpgen.train import load_model, pick_device
 
 
@@ -69,10 +69,11 @@ def sample(model: QuestionLSTM, vocab: Vocab, prefix: list[str], n: int, tempera
 
 def generate_raw(model: QuestionLSTM, vocab: Vocab, cfg: Config, subject: str, topic: str,
                  difficulty: str, n: int, temperature: float | None = None,
-                 top_k: int | None = None, seed: int | None = None) -> list[dict]:
+                 top_k: int | None = None, seed: int | None = None, use_controls: bool = True) -> list[dict]:
     """Unfiltered samples for one subject, topic and difficulty, with readable text."""
     g = cfg.generate
-    out = sample(model, vocab, to_tokens(cfg, subject, topic, difficulty), n,
+    prefix = to_tokens(cfg, subject, topic, difficulty) if use_controls else [BOS]
+    out = sample(model, vocab, prefix, n,
                  temperature or g["temperature"], top_k or g["top_k"], g["max_new_tokens"],
                  cfg.seed if seed is None else seed)
     acronyms = load_acronyms(str(cfg.path("acronyms")))
@@ -88,11 +89,12 @@ class LSTMSampler:
     model: QuestionLSTM
     vocab: Vocab
     cfg: Config
+    use_controls: bool = True    # False only for the ablation model trained without control tokens
 
     def __call__(self, subject: str, topic: str, difficulty: str, n: int, temperature: float | None = None,
                  top_k: int | None = None, seed: int | None = None) -> list[dict]:
         return generate_raw(self.model, self.vocab, self.cfg, subject, topic, difficulty, n,
-                            temperature, top_k, seed)
+                            temperature, top_k, seed, self.use_controls)
 
 
 def main(argv: list[str] | None = None) -> None:

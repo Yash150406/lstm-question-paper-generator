@@ -27,9 +27,11 @@ def build_vocab(cfg: Config, train: pd.DataFrame) -> Vocab:
 class QuestionDataset(Dataset):
     """Input is the sequence without its last token, target is it shifted by one."""
 
-    def __init__(self, df: pd.DataFrame, vocab: Vocab, cfg: Config) -> None:
-        seqs = (vocab.encode(to_tokens(cfg, *row)) for row in
-                df[["subject", "topic", "difficulty", "question"]].itertuples(index=False))
+    def __init__(self, df: pd.DataFrame, vocab: Vocab, cfg: Config, use_controls: bool = True) -> None:
+        tokens = (to_tokens(cfg, *row) for row in
+                  df[["subject", "topic", "difficulty", "question"]].itertuples(index=False))
+        # The no-control ablation keeps <bos> but drops the subject, topic and difficulty tokens.
+        seqs = (vocab.encode(t if use_controls else t[:1] + t[4:]) for t in tokens)
         self.seqs = [s for s in seqs if len(s) <= cfg.vocab["max_len"]]
         self.controls = set(vocab.control_ids)
 
