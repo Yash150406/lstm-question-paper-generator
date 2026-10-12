@@ -19,6 +19,7 @@ data:
   split: [0.8, 0.1, 0.1]
   templates_per_concept: {easy: 2, medium: 2, hard: 1}
   use_mmlu: false
+  mmlu_subsets: [college_computer_science, high_school_computer_science]
 
 vocab:
   min_freq: 2

@@ -1,4 +1,4 @@
-"""Merge seed, template and student questions, clean them and split."""
+"""Merge seed, template, student and MMLU questions, clean them and split."""
 import argparse
 import random
 import re
@@ -65,6 +65,36 @@ def expand_templates(cfg: Config, concepts: dict, rng: random.Random) -> pd.Data
     return df.assign(source="template")
 
 
+def match_topic(question: str, cfg: Config, concepts: dict) -> tuple[str, str] | None:
+    """Pick the subject and topic whose concepts appear most in the question."""
+    text = question.lower()
+    best, best_hits = None, 0
+    for key, info in cfg.subjects.items():
+        for topic, entry in concepts[key].items():
+            hits = sum(c.lower() in text for c in entry["concepts"])
+            if hits > best_hits:
+                best, best_hits = (info["name"], topic), hits
+    return best
+
+
+def load_mmlu(cfg: Config, concepts: dict) -> pd.DataFrame:
+    """Import MMLU computer science stems that match a topic. Needs internet."""
+    from datasets import load_dataset
+
+    rows = []
+    for subset in cfg.data["mmlu_subsets"]:
+        for split in ("dev", "validation", "test"):
+            for q in load_dataset("cais/mmlu", subset, split=split)["question"]:
+                # Stems that point at the options or end mid-sentence make no sense alone.
+                if "following" in q.lower() or not q.strip().endswith("?"):
+                    continue
+                match = match_topic(q, cfg, concepts)
+                if match:
+                    rows.append((*match, None, q))
+    df = pd.DataFrame(rows, columns=["subject", "topic", "difficulty", "question"])
+    return df.assign(source="mmlu")
+
+
 def drop_near_duplicates(df: pd.DataFrame, threshold: float) -> pd.DataFrame:
     """Within each topic, drop a row whose word overlap with a kept row is above threshold."""
     # ponytail: O(n^2) per topic, fine for ~150 rows a topic; use MinHash if the bank grows 100x
@@ -126,6 +156,8 @@ def build(cfg: Config) -> pd.DataFrame:
     rng = random.Random(cfg.seed)
     concepts = load_concepts(cfg)
     parts = [load_student(cfg), load_seeds(cfg), expand_templates(cfg, concepts, rng)]
+    if cfg.data["use_mmlu"]:
+        parts.append(load_mmlu(cfg, concepts))
     parts = [p for p in parts if not p.empty]
     return clean(pd.concat(parts, ignore_index=True), cfg)
 
