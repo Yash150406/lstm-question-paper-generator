@@ -86,9 +86,11 @@ Result:
 Check: `generate_questions` returns the requested number for every cell.
 
 ## Phase 7: Baseline
-- [ ] Trigram model with stupid backoff per topic and difficulty, with the back-off rule
-- [ ] Same interface as the LSTM generator
-- [ ] Validation perplexity
+- [x] Trigram model with stupid backoff per topic and difficulty, with the back-off rule
+- [x] Same interface as the LSTM generator
+- [x] Validation perplexity
+
+Result: validation perplexity 10.17 for the trigram model against 3.81 for the LSTM (`reports/baseline.json`, `reports/training_log.csv`). It samples for all 96 cells, and 31 hard cells with under 20 training questions use their topic model. Its samples are less coherent ("Differentiate between shared memory."), yet 24.9% pass the filters against 19.6% for the LSTM, because it copies whole training questions less often.
 
 Check: the trigram model generates for every cell.
 
@@ -185,3 +187,9 @@ The same centroids give the relevance score for filter 6 and the topic predictio
 
 **2026-10-12. Fallback re-filters the whole candidate pool.**
 Each extra round adds 50 candidates to a pool and the filters run again over the pool, so a question rejected only as a near duplicate in round one can still be picked later. After 5 rounds the pool is filtered once more with thresholds relaxed by 20%, then the bank fills any gap.
+
+**2026-10-12. Trigram probabilities are normalised and unigrams use add-one.**
+Plain stupid backoff gives scores that do not sum to one, which makes perplexity meaningless. The backoff scores for each context are divided by their sum, and add-one smoothing on unigrams keeps every word above zero. Sampling uses the same temperature, top-k, banned tokens and trigram blocking as the LSTM.
+
+**2026-10-12. Generators share one call signature.**
+`LSTMSampler` and `TrigramSampler` both take (subject, topic, difficulty, n, temperature, top_k, seed). `generate_questions` uses whichever sampler its context holds, so the baseline goes through exactly the same filters and fallback.
