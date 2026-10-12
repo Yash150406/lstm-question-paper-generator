@@ -65,7 +65,7 @@ def main(argv: list[str] | None = None) -> None:
     train, val = pd.read_csv(data / "train.csv"), pd.read_csv(data / "val.csv")
 
     vocab = build_vocab(cfg, train)
-    vocab.save(cfg.path("artifacts_dir") / "vocab.json")
+    vocab.save(cfg.path("vocab"))
     ds = QuestionDataset(train, vocab, cfg)
     print(f"Vocab size: {len(vocab)} ({len(vocab.controls)} control tokens)")
     print(f"Train sequences: {len(ds)} of {len(train)}")

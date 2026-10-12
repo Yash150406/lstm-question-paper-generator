@@ -10,6 +10,10 @@ paths:
   artifacts_dir: artifacts
   reports_dir: reports
   outputs_dir: outputs
+  vocab: artifacts/vocab.json
+  checkpoint: artifacts/model_best.pt
+  training_log: reports/training_log.csv
+  loss_curve: reports/loss_curve.png
 
 data:
   min_words: 5
@@ -43,6 +47,7 @@ train:
   lr_factor: 0.5
   lr_patience: 2
   clip_norm: 1.0
+  device: auto   # auto picks cuda when available
 
 generate:
   temperature: 0.8
