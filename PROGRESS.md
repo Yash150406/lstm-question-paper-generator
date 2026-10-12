@@ -12,13 +12,15 @@ Boxes get ticked only after the phase check passes.
 Check: `python -c "import qpgen"` runs without errors.
 
 ## Phase 1: Dataset
-- [ ] Seed files for all four subjects, at least 250 questions each, every topic and difficulty
-- [ ] `concepts.yaml` and the question templates
-- [ ] `labels.py` with the verb rules and tests
-- [ ] `build_dataset.py`: merge, clean, exact and near duplicate removal, length filter
-- [ ] Optional MMLU import, tagged `mmlu`
-- [ ] Stratified 80/10/10 split saved as three CSVs
-- [ ] Counts by subject, topic and difficulty. Fail if a subject has fewer than 500
+- [x] Seed files for all four subjects, at least 250 questions each, every topic and difficulty
+- [x] `concepts.yaml` and the question templates
+- [x] `labels.py` with the verb rules and tests
+- [x] `build_dataset.py`: merge, clean, exact and near duplicate removal, length filter
+- [x] Optional MMLU import, tagged `mmlu`
+- [x] Stratified 80/10/10 split saved as three CSVs
+- [x] Counts by subject, topic and difficulty. Fail if a subject has fewer than 500
+
+Result: 3,445 questions (DBMS 873, OS 863, CN 867, DSA 842), 39% easy, 41% medium, 20% hard. Split 2,756 / 344 / 345.
 
 Check: `questions.csv` matches the schema, has no duplicates, split sizes close to 80/10/10.
 
@@ -43,6 +45,8 @@ Check: `pytest tests/test_model.py` passes.
 - [ ] Training log CSV and loss curve
 - [ ] Best checkpoint with weights, model config and vocabulary
 - [ ] Full training run, time and best validation perplexity recorded
+- [ ] One CPU training run timed for the report, next to the GPU time
+- [ ] Two GPU runs with seed 42 give the same validation loss
 
 Check: validation loss falls then flattens. `model_best.pt` loads and runs.
 
@@ -84,8 +88,13 @@ Check: a balanced paper totals 70 marks. DOCX and PDF layout checked by eye.
 - [ ] Streamlit app with the three tabs
 - [ ] Missing checkpoint message
 - [ ] Regenerate, Edit and Remove per question
+- [ ] `upload.py`: PDF, text and typed-name input
+- [ ] Subject and topic detection, with a clear message for unsupported material
+- [ ] Upload similarity in ranking and `from_notes` template fill
+- [ ] CLI `--from-file` and the app uploader
+- [ ] Tests for each input type and the unsupported case
 
-Check: app runs, a paper generates for each subject, all three file types download.
+Check: app runs, a paper generates for each subject, all three file types download. `paper --from-file` on DBMS notes gives a 70-mark DBMS paper on the matching topics.
 
 ## Phase 10: Evaluation
 - [ ] Every metric for the LSTM, the trigram and the real questions
@@ -120,3 +129,21 @@ Windows has no `make` by default. The Makefile is there for Linux, macOS and any
 
 **2026-10-12. Training runs on the laptop GPU.**
 Training uses the RTX 4050 through the CUDA 13.0 build of torch 2.14.1. `requirements.txt` still pins the plain `torch==2.14.1`, so a CPU-only machine installs fine. The code picks CUDA when it is there and falls back to CPU. The README gives the extra install line for the GPU build.
+
+**2026-10-12. Papers can be built from uploaded notes.**
+A user can upload a PDF or notes, paste text, or type a chapter name. The text is matched to the fixed subject and topic list with the same TF-IDF centroids the filters use, and the LSTM generates for the matched topics. Questions closer to the notes rank higher, and key terms from the notes fill the templates (tagged `from_notes`). Adds `pypdf` for reading PDFs. Alternative was generating straight from the notes with a pretrained language model, which is out of scope and would sideline the LSTM.
+
+**2026-10-12. Deterministic mode for GPU runs.**
+cuDNN's LSTM kernels can give slightly different results between runs even with the same seed. `set_seed` turns on PyTorch's deterministic mode and sets `CUBLAS_WORKSPACE_CONFIG` so a repeat run on the same machine matches. It costs a little speed. One CPU run is also timed so the report can state CPU training time, since the project is meant to train on a CPU.
+
+**2026-10-12. Seed questions are at least 5 words.**
+The quality rule drops anything under 5 words, which removed about 190 short seed questions like "What is a stack?". Instead of loosening the rule, those questions were extended with the subject ("in data structures") or "Give one example.", and short "Explain X." ones became "Explain X with an example.".
+
+**2026-10-12. Template expansion settings.**
+Each topic has 15 concepts and 4 concept pairs. Every concept fills 2 easy, 2 medium and 1 hard template picked at random with seed 42, and every pair fills one compare template. With the seed bank this gives 3,445 questions at roughly 40/40/20, clearing the 3,000 floor with some margin. With 12 concepts per topic the bank came out at 2,991, just short.
+
+**2026-10-12. MMLU import is off by default.**
+The import is in place (`data.use_mmlu`), but only 8 stems from the two computer science subsets match a topic and are not built around the answer options, and most of those are long numeric word problems over the 40 word limit. It adds nothing useful, so the default build runs offline from seed files and templates.
+
+**2026-10-12. The subject column holds the full subject name.**
+`questions.csv` stores "DBMS", "Operating Systems" and so on, since that is what shows up in the app and on papers. The short key is looked up from config where needed.
