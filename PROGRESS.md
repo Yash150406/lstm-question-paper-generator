@@ -95,10 +95,12 @@ Result: validation perplexity 10.17 for the trigram model against 3.81 for the L
 Check: the trigram model generates for every cell.
 
 ## Phase 8: Paper builder and export
-- [ ] `PaperSpec`, the three presets and `build_paper`
-- [ ] Marks, uniqueness and topic coverage assertions
-- [ ] DOCX, PDF and JSON export
-- [ ] Tests for totals, uniqueness, determinism and that the files open
+- [x] `PaperSpec`, the three presets and `build_paper`
+- [x] Marks, uniqueness and topic coverage assertions
+- [x] DOCX, PDF and JSON export
+- [x] Tests for totals, uniqueness, determinism and that the files open
+
+Result: a balanced 70 mark paper builds for every subject in 1.0 to 1.6 s on the GPU, all 18 questions generated. The same seed and spec give byte-identical JSON for all three presets. DOCX (checked in Word) and PDF both show the header, section headings with mark totals, numbered questions and marks on the right. Wording is often template-like and a few slips get through, for example "Implement relational algebra for relational algebra and 3NF."
 
 Check: a balanced paper totals 70 marks. DOCX and PDF layout checked by eye.
 
@@ -193,3 +195,9 @@ Plain stupid backoff gives scores that do not sum to one, which makes perplexity
 
 **2026-10-12. Generators share one call signature.**
 `LSTMSampler` and `TrigramSampler` both take (subject, topic, difficulty, n, temperature, top_k, seed). `generate_questions` uses whichever sampler its context holds, so the baseline goes through exactly the same filters and fallback.
+
+**2026-10-12. Topic allocation uses the largest remainder method.**
+Each topic's fair share is count x weight / total weight. Every topic gets the floor of its share and the leftover questions go to the largest remainders, so no topic gets more than one above its share. When a section has at least as many questions as topics, any topic left at zero takes one from the topic furthest above its share.
+
+**2026-10-12. Repeats across the paper use the same overlap limit as the filters.**
+The builder asks for 3 extra candidates per topic and skips any whose word overlap with a question already on the paper is 0.7 or more. If a topic still falls short it asks again with a new seed, up to 5 times.
