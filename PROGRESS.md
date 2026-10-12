@@ -25,10 +25,12 @@ Result: 3,445 questions (DBMS 873, OS 863, CN 867, DSA 842), 39% easy, 41% mediu
 Check: `questions.csv` matches the schema, has no duplicates, split sizes close to 80/10/10.
 
 ## Phase 2: Tokenizer and dataset class
-- [ ] `tokenize`, `detokenize` and `Vocab` with special and control tokens, save and load
-- [ ] PyTorch `Dataset` with input/target pairs and the ignore mask
-- [ ] `collate_fn` with padding
-- [ ] Round-trip tests for the tokenizer
+- [x] `tokenize`, `detokenize` and `Vocab` with special and control tokens, save and load
+- [x] PyTorch `Dataset` with input/target pairs and the ignore mask
+- [x] `collate_fn` with padding
+- [x] Round-trip tests for the tokenizer
+
+Result: vocab of 920 tokens (4 special, 39 control, 877 words seen at least twice in train). All 2,756 train sequences fit in 50 tokens. Unknown word rate on validation is 2.68%.
 
 Check: three printed sequences start with the control tokens. Unknown-word rate on validation printed, looked into if above 5%.
 
@@ -147,3 +149,6 @@ The import is in place (`data.use_mmlu`), but only 8 stems from the two computer
 
 **2026-10-12. The subject column holds the full subject name.**
 `questions.csv` stores "DBMS", "Operating Systems" and so on, since that is what shows up in the app and on papers. The short key is looked up from config where needed.
+
+**2026-10-12. Control-token targets are masked by swapping them for `<pad>`.**
+The dataset replaces control-token targets with the pad id, so a single `ignore_index` in the loss covers both pad and control positions. Alternative was a separate mask tensor, which is more code for the same result.
