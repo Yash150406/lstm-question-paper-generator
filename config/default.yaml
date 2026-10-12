@@ -86,6 +86,7 @@ paper:
     easy_heavy: {easy: 15, medium: 6, hard: 1}
     hard_heavy: {easy: 5, medium: 4, hard: 4}
   instruction: "Answer all questions"
+  extra_candidates: 3   # asked for on top of what a topic needs, to replace repeats
 
 eval:
   candidates_per_cell: 20
