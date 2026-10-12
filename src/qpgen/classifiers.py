@@ -87,8 +87,11 @@ def main(argv: list[str] | None = None) -> None:
     data = cfg.path("processed_dir")
     train, val, test = (pd.read_csv(data / f"{s}.csv") for s in ("train", "val", "test"))
 
-    scorer = fit_scorer(cfg, train, val)
-    save_scorer(scorer, cfg.path("classifiers"))
+    # Under `python -m` this file is __main__, so use the package copy of the class.
+    # Otherwise pickle saves it as __main__.Scorer and nothing else can load it.
+    from qpgen import classifiers
+    scorer = classifiers.fit_scorer(cfg, train, val)
+    classifiers.save_scorer(scorer, cfg.path("classifiers"))
     report = {"test": accuracy(scorer, test), "test_size": len(test),
               "relevance_thresholds": {t: round(v, 4) for t, v in scorer.thresholds.items()}}
     cfg.path("classifier_report").write_text(json.dumps(report, indent=2), encoding="utf-8")
