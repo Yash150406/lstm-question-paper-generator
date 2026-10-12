@@ -60,10 +60,12 @@ Result (from `reports/`):
 Check: validation loss falls then flattens. `model_best.pt` loads and runs.
 
 ## Phase 5: Generation
-- [ ] Sampling with temperature, top-k, blocked tokens and repeated trigram block
-- [ ] Batch generation
-- [ ] Same seed gives same output (test)
-- [ ] 5 samples printed per subject
+- [x] Sampling with temperature, top-k, blocked tokens and repeated trigram block
+- [x] Batch generation
+- [x] Same seed gives same output (test)
+- [x] 5 samples printed per subject
+
+Result: 4,800 raw samples (50 for each of the 96 subject, topic and difficulty cells) in 3.4 s on the GPU. None hold a banned token and all end with `<eos>` inside 40 tokens. Samples stay on topic and lean on template wording, for example "Explain the working of TCP connection termination." Some slip, such as "integrity integrity constraints", which the filters are there to catch.
 
 Check: no output holds a control token, `<pad>`, `<bos>` or `<unk>`.
 
