@@ -40,8 +40,8 @@
         "std": 0.0006
       },
       "pass_rate": {
-        "mean": 0.2243,
-        "std": 0.0105
+        "mean": 0.1111,
+        "std": 0.0042
       },
       "count": {
         "mean": 1920.0,
@@ -54,36 +54,36 @@
         "std": 0.0
       },
       "distinct_1": {
-        "mean": 0.1562,
-        "std": 0.0028
+        "mean": 0.2104,
+        "std": 0.0059
       },
       "distinct_2": {
-        "mean": 0.4142,
-        "std": 0.0103
+        "mean": 0.4005,
+        "std": 0.0158
       },
       "self_bleu": {
-        "mean": 0.5336,
-        "std": 0.0303
+        "mean": 0.554,
+        "std": 0.0291
       },
       "relevance": {
-        "mean": 0.2666,
-        "std": 0.0008
-      },
-      "topic_accuracy": {
-        "mean": 0.8599,
-        "std": 0.02
-      },
-      "difficulty_accuracy": {
-        "mean": 0.9984,
+        "mean": 0.2903,
         "std": 0.0023
       },
+      "topic_accuracy": {
+        "mean": 0.8949,
+        "std": 0.0163
+      },
+      "difficulty_accuracy": {
+        "mean": 1.0,
+        "std": 0.0
+      },
       "pass_rate": {
-        "mean": 0.2243,
-        "std": 0.0105
+        "mean": 0.1111,
+        "std": 0.0042
       },
       "count": {
-        "mean": 430.6667,
-        "std": 20.0721
+        "mean": 213.3333,
+        "std": 8.0139
       }
     },
     "Trigram raw": {
@@ -116,8 +116,8 @@
         "std": 0.0021
       },
       "pass_rate": {
-        "mean": 0.2842,
-        "std": 0.0098
+        "mean": 0.2519,
+        "std": 0.0045
       },
       "count": {
         "mean": 1920.0,
@@ -130,36 +130,36 @@
         "std": 0.0
       },
       "distinct_1": {
-        "mean": 0.1269,
-        "std": 0.0023
+        "mean": 0.1381,
+        "std": 0.0055
       },
       "distinct_2": {
-        "mean": 0.3604,
-        "std": 0.0102
+        "mean": 0.3603,
+        "std": 0.012
       },
       "self_bleu": {
-        "mean": 0.558,
-        "std": 0.0153
+        "mean": 0.5674,
+        "std": 0.0146
       },
       "relevance": {
-        "mean": 0.3003,
-        "std": 0.0035
+        "mean": 0.2996,
+        "std": 0.0044
       },
       "topic_accuracy": {
-        "mean": 0.961,
-        "std": 0.0025
+        "mean": 0.9649,
+        "std": 0.0016
       },
       "difficulty_accuracy": {
-        "mean": 0.9901,
-        "std": 0.0048
+        "mean": 0.9897,
+        "std": 0.0045
       },
       "pass_rate": {
-        "mean": 0.2842,
-        "std": 0.0098
+        "mean": 0.2519,
+        "std": 0.0045
       },
       "count": {
-        "mean": 545.6667,
-        "std": 18.8385
+        "mean": 483.6667,
+        "std": 8.6538
       }
     }
   },
@@ -187,7 +187,7 @@
       "relevance": 0.2717,
       "topic_accuracy": 0.8641,
       "difficulty_accuracy": 1.0,
-      "pass_rate": 0.1469
+      "pass_rate": 0.099
     },
     {
       "variant": "temperature 0.8",
@@ -199,7 +199,7 @@
       "relevance": 0.2473,
       "topic_accuracy": 0.7828,
       "difficulty_accuracy": 0.9984,
-      "pass_rate": 0.2161
+      "pass_rate": 0.1052
     },
     {
       "variant": "temperature 1.0",
@@ -211,7 +211,7 @@
       "relevance": 0.2243,
       "topic_accuracy": 0.7052,
       "difficulty_accuracy": 0.9979,
-      "pass_rate": 0.2698
+      "pass_rate": 0.0974
     },
     {
       "variant": "hidden size 128",
@@ -223,7 +223,7 @@
       "relevance": 0.1513,
       "topic_accuracy": 0.1927,
       "difficulty_accuracy": 0.9969,
-      "pass_rate": 0.2167
+      "pass_rate": 0.0594
     },
     {
       "variant": "hidden size 512",
@@ -235,7 +235,7 @@
       "relevance": 0.2586,
       "topic_accuracy": 0.8224,
       "difficulty_accuracy": 1.0,
-      "pass_rate": 0.2375
+      "pass_rate": 0.0958
     },
     {
       "variant": "dropout 0.4",
@@ -247,7 +247,7 @@
       "relevance": 0.24,
       "topic_accuracy": 0.726,
       "difficulty_accuracy": 1.0,
-      "pass_rate": 0.2182
+      "pass_rate": 0.1135
     },
     {
       "variant": "no control tokens",
@@ -259,7 +259,7 @@
       "relevance": 0.1097,
       "topic_accuracy": 0.0312,
       "difficulty_accuracy": 0.3333,
-      "pass_rate": 0.0125
+      "pass_rate": 0.0057
     }
   ]
 }

@@ -1,63 +1,63 @@
 # Sample questions
 
-LSTM output, seed 42. Accepted questions passed all seven filters.
+LSTM output, seed 42. Accepted questions passed all seven filters and the phrase check.
 
 ## DBMS
 
 | Topic | Difficulty | Question | Result |
 | --- | --- | --- | --- |
-| Recovery | easy | Write a short note on checkpoint. | accepted |
-| ER model | hard | Evaluate the importance of ternary key in practice. | accepted |
-| ER model | easy | Write a short note on composite attribute. | accepted |
-| Normalization | easy | List the key features of relational cover. | accepted |
-| SQL queries | medium | Explain the limitations of having clause. | accepted |
-| SQL queries | medium | Describe view with a neat diagram. | accepted |
-| Relational model and keys | easy | Write a short note on foreign key. | accepted |
+| Recovery | medium | Explain the working of working set model. | accepted |
 | ER model | hard | Analyze the advantages and limitations of aggregation. | accepted |
-| Recovery | easy | What do you mean by ARIES? | rejected: copy of a training question |
-| Recovery | hard | Analyze the advantages and limitations of second normal form. | rejected: copy of a training question |
+| ER model | easy | Write a short note on composite attribute. | accepted |
+| Transactions and ACID | easy | What do you mean by transaction states? | accepted |
+| Normalization | medium | Explain Codd's axioms with an example. | accepted |
+| Normalization | medium | Explain the working of ARIES. | accepted |
+| Relational model and keys | medium | Explain Codd's rules for a relational algebra. | accepted |
+| ER model | hard | Evaluate the importance of aggregation in practice. | accepted |
+| Indexing and B+ trees | easy | Write a short note on extendible hashing. | rejected: copy of a training question |
+| Indexing and B+ trees | hard | Design a B+ tree of the given buffer problem and show each safe. | rejected: relevance 0.10 below 0.21 |
 
 ## Operating Systems
 
 | Topic | Difficulty | Question | Result |
 | --- | --- | --- | --- |
-| Memory management | medium | Explain the working of paging. | accepted |
-| Process management | hard | Evaluate the importance of process control in practice. | accepted |
-| Memory management | hard | Evaluate the importance of orphan fragmentation in practice. | accepted |
-| Deadlocks | medium | Explain the working of mutual exclusion condition. | accepted |
-| Process management | easy | Define a shared process and operating systems. | accepted |
-| Process management | easy | List the key features of interprocess communication. | accepted |
-| CPU scheduling | hard | Discuss priority robin scheduling in detail with a suitable example. | accepted |
-| Synchronization | easy | What is a binary time? | accepted |
-| Virtual memory and paging | hard | Analyze the advantages and limitations of FIFO page replacement. | rejected: copy of a training question |
-| File systems | hard | Evaluate the importance of file attributes in practice. | rejected: copy of a training question |
+| Deadlocks | hard | Discuss deadlock in detail with a suitable example. | accepted |
+| Process management | medium | Explain the working of process control block. | accepted |
+| Memory management | easy | List the key features of multithreading model. | accepted |
+| Synchronization | hard | Analyze the advantages and limitations of busy waiting. | accepted |
+| Process management | easy | Write a short note on process control block. | accepted |
+| Process management | easy | List the key features of multithreading model. | accepted |
+| Disk scheduling | medium | Explain the significance of FCFS scheduling. | accepted |
+| CPU scheduling | easy | List the key features of exponential averaging. | accepted |
+| Synchronization | medium | Explain how semaphores are implemented busy waiting. | rejected: unseen phrase 'implemented busy' |
+| Memory management | hard | Evaluate the importance of multithreading model in practice. | rejected: copy of a training question |
 
 ## Computer Networks
 
 | Topic | Difficulty | Question | Result |
 | --- | --- | --- | --- |
-| OSI and TCP/IP models | easy | What is encapsulation? give one example. | accepted |
-| Routing algorithms | hard | Analyze the advantages and limitations of OSPF. | accepted |
-| Data link layer | hard | Evaluate the importance of flow control in practice. | accepted |
-| Application layer protocols | medium | Compare DNS and non DNS query. | accepted |
 | Transport layer | hard | Analyze the advantages and limitations of socket. | accepted |
-| Application layer protocols | medium | Explain HTTP status format with an example. | accepted |
-| Routing algorithms | medium | Explain the working of hierarchical routing. | accepted |
-| MAC protocols | hard | Analyze the advantages and limitations of slotted ALOHA. | accepted |
-| Error detection | medium | Describe IMAP with a neat diagram. | rejected: copy of a training question |
-| IP addressing and subnetting | hard | Discuss NAT in detail with a suitable example. | rejected: copy of a training question |
+| OSI and TCP/IP models | easy | List the key features of network topology. | accepted |
+| Transport layer | medium | Explain the significance of silly window syndrome. | accepted |
+| Error detection | easy | List the key features of Hamming code. | accepted |
+| Transport layer | medium | Explain the working of three way handshake. | accepted |
+| IP addressing and subnetting | medium | Explain the working of IPv6 header. | accepted |
+| Error detection | hard | Analyze the advantages and limitations of generator polynomial. | accepted |
+| IP addressing and subnetting | hard | Evaluate the importance of subnetting in practice. | accepted |
+| Routing algorithms | medium | Explain the significance of OSPF. | rejected: copy of a training question |
+| Error detection | medium | Explain the working of parity check. | rejected: copy of a training question |
 
 ## Data Structures and Algorithms
 
 | Topic | Difficulty | Question | Result |
 | --- | --- | --- | --- |
-| Sorting | medium | Compare quick sort and adjacency matrix. | accepted |
-| Trees and BST | medium | Describe BST expression with a neat diagram. | accepted |
-| Dynamic programming | medium | Compare dynamic programming with optimal greedy method. | accepted |
-| Dynamic programming | hard | Analyze the advantages and limitations of memoization. | accepted |
-| Arrays and linked lists | easy | List the key features of order representation. | accepted |
-| Dynamic programming | easy | Define coin distance problem and give one example. | accepted |
-| Stacks and queues | medium | Explain queue to used using a programming. | accepted |
-| Hashing and searching | hard | Evaluate the importance of hash function in practice. | accepted |
-| Graphs | hard | Analyze the advantages and limitations of stable sorting. | rejected: copy of a training question |
-| Heaps | hard | Discuss decrease key in detail with a suitable example. | rejected: copy of a training question |
+| Dynamic programming | medium | Explain the working of travelling salesman problem. | accepted |
+| Dynamic programming | hard | Evaluate the importance of longest common subsequence in practice. | accepted |
+| Arrays and linked lists | medium | Explain the working of singly linked list. | accepted |
+| Hashing and searching | hard | Evaluate the importance of linear probing in practice. | accepted |
+| Dynamic programming | hard | Analyze the advantages and limitations of edit distance. | accepted |
+| Stacks and queues | medium | Describe queue using linked list with a neat diagram. | accepted |
+| Hashing and searching | medium | Explain the working of folding method. | accepted |
+| Heaps | medium | Explain the array representation of a min heap. | accepted |
+| Heaps | medium | Describe min heap with a neat diagram. | rejected: copy of a training question |
+| Trees and BST | hard | Discuss in detail the many representation of a binary tree. | rejected: unseen phrase 'many representation' |
