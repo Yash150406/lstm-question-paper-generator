@@ -8,6 +8,7 @@ data:
 
 train:
 	$(PY) -m qpgen.train --config $(CONFIG)
+	$(PY) -m qpgen.classifiers --config $(CONFIG)
 
 eval:
 	$(PY) -m qpgen.evaluate --config $(CONFIG)

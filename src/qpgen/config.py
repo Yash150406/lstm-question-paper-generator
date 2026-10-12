@@ -19,6 +19,7 @@ class Config:
     model: dict
     train: dict
     generate: dict
+    classifiers: dict
     filters: dict
     paper: dict
     eval: dict

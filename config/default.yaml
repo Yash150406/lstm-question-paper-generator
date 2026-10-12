@@ -14,6 +14,8 @@ paths:
   checkpoint: artifacts/model_best.pt
   training_log: reports/training_log.csv
   loss_curve: reports/loss_curve.png
+  classifiers: artifacts/classifiers.pkl
+  classifier_report: reports/classifier_accuracy.json
 
 data:
   min_words: 5
@@ -54,6 +56,12 @@ generate:
   top_k: 40
   max_new_tokens: 40
   candidates_per_cell: 50
+
+classifiers:
+  ngram_range: [1, 2]
+  sublinear_tf: true
+  C: 4.0
+  max_iter: 2000
 
 filters:
   min_words: 5
