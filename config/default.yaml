@@ -42,7 +42,7 @@ model:
 train:
   lr: 0.001
   batch_size: 64
-  max_epochs: 40
+  max_epochs: 100
   patience: 5
   lr_factor: 0.5
   lr_patience: 2
