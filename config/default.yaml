@@ -16,6 +16,7 @@ paths:
   loss_curve: reports/loss_curve.png
   classifiers: artifacts/classifiers.pkl
   classifier_report: reports/classifier_accuracy.json
+  baseline_report: reports/baseline.json
 
 data:
   min_words: 5
