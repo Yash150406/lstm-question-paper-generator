@@ -105,15 +105,22 @@ Result: a balanced 70 mark paper builds for every subject in 1.0 to 1.6 s on the
 Check: a balanced paper totals 70 marks. DOCX and PDF layout checked by eye.
 
 ## Phase 9: CLI and app
-- [ ] `cli.py` with `generate` and `paper`
-- [ ] Streamlit app with the three tabs
-- [ ] Missing checkpoint message
-- [ ] Regenerate, Edit and Remove per question
-- [ ] `upload.py`: PDF, text and typed-name input
-- [ ] Subject and topic detection, with a clear message for unsupported material
-- [ ] Upload similarity in ranking and `from_notes` template fill
-- [ ] CLI `--from-file` and the app uploader
-- [ ] Tests for each input type and the unsupported case
+- [x] `cli.py` with `generate` and `paper`
+- [x] Streamlit app with the three tabs
+- [x] Missing checkpoint message
+- [x] Regenerate, Edit and Remove per question
+- [x] `upload.py`: PDF, text and typed-name input
+- [x] Subject and topic detection, with a clear message for unsupported material
+- [x] Upload similarity in ranking and `from_notes` template fill
+- [x] CLI `--from-file` and the app uploader
+- [x] Tests for each input type and the unsupported case
+
+Result:
+- A4: `generate` prints 5 questions ending in . with no < or >. A5: two `paper` runs with seed 42 give identical JSON.
+- A8: with no checkpoint the app shows "Run `make train` first" and no traceback (`tests/test_app.py`).
+- A9: `paper --from-file` on a DBMS notes PDF detects DBMS with Normalization (57%) and Concurrency control (29%) and builds a 70 mark paper split by those weights. Unrelated text (history, a recipe) is refused with the list of supported subjects.
+- In the browser: a paper generates, Regenerate swaps one question, Remove drops the total and Fill brings it back, DOCX, PDF and JSON buttons appear once marks add up, the Try the model tab shows passed and rejected samples with reasons, and pasted notes are detected.
+- Weak spot: with notes, the novel questions the model writes often mix terms wrongly ("Armstrong normal form", "archival dependency"). This is the same copy problem seen in Phase 6, and is looked at in Phase 10.
 
 Check: app runs, a paper generates for each subject, all three file types download. `paper --from-file` on DBMS notes gives a 70-mark DBMS paper on the matching topics.
 
@@ -201,3 +208,9 @@ Each topic's fair share is count x weight / total weight. Every topic gets the f
 
 **2026-10-12. Repeats across the paper use the same overlap limit as the filters.**
 The builder asks for 3 extra candidates per topic and skips any whose word overlap with a question already on the paper is 0.7 or more. If a topic still falls short it asks again with a new seed, up to 5 times.
+
+**2026-10-12. Upload topics are found sentence by sentence.**
+Scoring a whole set of notes against each topic at once let the main topic hide the others. Each sentence now goes to its closest topic if it clears that topic's threshold, and a topic is picked when it holds at least 15% of those sentences (up to 4 topics, weighted by share). English stop words are dropped before scoring, since TF-IDF over common words made any English text, such as a history paragraph, look about 0.19 similar to every subject. The subject cut-off is 0.05; real notes scored around 0.14 and unrelated text 0.00.
+
+**2026-10-12. Removing a question blocks downloads until the section is filled.**
+Exported papers must always add up to the declared marks, so after a Remove the app shows the shortfall and a Fill button instead of the download buttons.
