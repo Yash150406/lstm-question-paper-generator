@@ -112,3 +112,42 @@ def check_paper(paper: dict) -> None:
         raise ValueError("Paper has an empty question")
     if len(set(texts)) != len(texts):
         raise ValueError("Paper repeats a question")
+
+
+def paper_words(paper: dict, skip: dict | None = None) -> list[set[str]]:
+    """Word sets of every question on the paper, leaving out one if given."""
+    return [set(words(q["text"])) for s in paper["sections"] for q in s["questions"] if q is not skip]
+
+
+def replace_question(paper: dict, cfg: Config, generate: Callable[..., list[dict]],
+                     s_idx: int, q_idx: int, seed: int) -> bool:
+    """Swap one question for a new one on the same topic. Returns False if none was found."""
+    sec = paper["sections"][s_idx]
+    old = sec["questions"][q_idx]
+    used = paper_words(paper, skip=old)
+    for attempt in range(cfg.filters["max_rounds"]):
+        cands = generate(paper["spec"].subject, old["topic"], sec["difficulty"],
+                         1 + cfg.paper["extra_candidates"], seed=seed + attempt)
+        got = pick_unique([c for c in cands if c["text"] != old["text"]], used, 1, cfg.filters["dup_overlap"])
+        if got:
+            sec["questions"][q_idx] = {**got[0], "topic": old["topic"], "marks": sec["marks"]}
+            return True
+    return False
+
+
+def fill_section(paper: dict, cfg: Config, generate: Callable[..., list[dict]], s_idx: int, seed: int) -> None:
+    """Add questions to a section until it is back to its planned count, topic by topic."""
+    spec, sec = paper["spec"], paper["sections"][s_idx]
+    target = allocate(spec.sections[s_idx].count, spec.topics, spec.weights)
+    used = paper_words(paper)
+    for t_idx, (topic, n) in enumerate(target.items()):
+        missing = n - sum(q["topic"] == topic for q in sec["questions"])
+        for attempt in range(cfg.filters["max_rounds"]):
+            if missing <= 0:
+                break
+            cands = generate(spec.subject, topic, sec["difficulty"], missing + cfg.paper["extra_candidates"],
+                             seed=seed + 100 * attempt + t_idx)
+            got = pick_unique(cands, used, missing, cfg.filters["dup_overlap"])
+            sec["questions"] += [{**q, "topic": topic, "marks": sec["marks"]} for q in got]
+            missing -= len(got)
+    sec["questions"].sort(key=lambda q: spec.topics.index(q["topic"]))

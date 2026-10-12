@@ -4,7 +4,8 @@ from collections import Counter
 import pytest
 
 from qpgen.config import load_config
-from qpgen.paper import allocate, build_paper, check_paper, spec_from_preset
+from qpgen.paper import (allocate, build_paper, check_paper, fill_section, replace_question,
+                         spec_from_preset)
 
 CFG = load_config()
 TOPICS = CFG.subjects["dbms"]["topics"]
@@ -86,3 +87,24 @@ def test_check_paper_catches_bad_totals_and_repeats():
     paper["sections"][0]["questions"].pop()
     with pytest.raises(ValueError):
         check_paper(paper)
+
+
+def test_replace_question_changes_only_that_question():
+    spec = spec_from_preset(CFG, "DBMS", TOPICS, "balanced")
+    paper = build_paper(spec, 42, CFG, stub_generate)
+    before = [q["text"] for s in paper["sections"] for q in s["questions"]]
+    assert replace_question(paper, CFG, stub_generate, 1, 2, seed=999)
+    after = [q["text"] for s in paper["sections"] for q in s["questions"]]
+    changed = [i for i, (a, b) in enumerate(zip(before, after)) if a != b]
+    assert changed == [10 + 2]
+    assert paper["sections"][1]["questions"][2]["topic"] == TOPICS[2]
+    check_paper(paper)
+
+
+def test_fill_section_restores_count_after_removal():
+    spec = spec_from_preset(CFG, "DBMS", TOPICS, "balanced")
+    paper = build_paper(spec, 42, CFG, stub_generate)
+    removed = paper["sections"][0]["questions"].pop(3)
+    fill_section(paper, CFG, stub_generate, 0, seed=500)
+    check_paper(paper)
+    assert sum(q["topic"] == removed["topic"] for q in paper["sections"][0]["questions"]) >= 1
