@@ -1,0 +1,81 @@
+# All settings live here. Paths are relative to the project root.
+seed: 42
+
+paths:
+  subjects_topics: config/subjects_topics.yaml
+  concepts: config/concepts.yaml
+  acronyms: config/acronyms.yaml
+  raw_dir: data/raw
+  processed_dir: data/processed
+  artifacts_dir: artifacts
+  reports_dir: reports
+  outputs_dir: outputs
+
+data:
+  min_words: 5
+  max_words: 40
+  near_dup_overlap: 0.8
+  min_per_subject: 500
+  split: [0.8, 0.1, 0.1]
+  use_mmlu: false
+
+vocab:
+  min_freq: 2
+  max_words: 8000
+  max_len: 50
+
+model:
+  embed_dim: 256
+  hidden_dim: 256
+  num_layers: 2
+  dropout: 0.3
+  tie_weights: true
+  init_range: 0.1
+  forget_bias: 1.0
+
+train:
+  lr: 0.001
+  batch_size: 64
+  max_epochs: 40
+  patience: 5
+  lr_factor: 0.5
+  lr_patience: 2
+  clip_norm: 1.0
+
+generate:
+  temperature: 0.8
+  top_k: 40
+  max_new_tokens: 40
+  candidates_per_cell: 50
+
+filters:
+  min_words: 5
+  max_words: 30
+  max_repeat: 3
+  stop_words: [the, of, and, to, a, an, in, on, for, with, is, or]
+  allow_train_copies: false
+  dup_overlap: 0.7
+  relevance_percentile: 10
+  min_difficulty_prob: 0.4
+  max_rounds: 5
+  relax_factor: 0.8
+
+paper:
+  institute: "MMCOE"
+  exam_title: "Semester Examination"
+  duration_minutes: 180
+  total_marks: 70
+  presets:
+    balanced:   {easy: 10, medium: 6, hard: 2}
+    easy_heavy: {easy: 15, medium: 6, hard: 1}
+    hard_heavy: {easy: 5, medium: 4, hard: 4}
+  instruction: "Answer all questions"
+
+eval:
+  candidates_per_cell: 20
+  seeds: [42, 43, 44]
+  temperatures: [0.6, 0.8, 1.0]
+  hidden_sizes: [128, 256, 512]
+  baseline_min_cell: 20
+  backoff_alpha: 0.4
+  human_per_source: 20

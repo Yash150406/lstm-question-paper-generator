@@ -1,0 +1,51 @@
+# key is used in file names and control tokens
+subjects:
+  dbms:
+    name: DBMS
+    topics:
+      - ER model
+      - Relational model and keys
+      - SQL queries
+      - Normalization
+      - Transactions and ACID
+      - Concurrency control
+      - Indexing and B+ trees
+      - Recovery
+  os:
+    name: Operating Systems
+    topics:
+      - Process management
+      - CPU scheduling
+      - Synchronization
+      - Deadlocks
+      - Memory management
+      - Virtual memory and paging
+      - File systems
+      - Disk scheduling
+  cn:
+    name: Computer Networks
+    topics:
+      - OSI and TCP/IP models
+      - Data link layer
+      - Error detection
+      - MAC protocols
+      - IP addressing and subnetting
+      - Routing algorithms
+      - Transport layer
+      - Application layer protocols
+  dsa:
+    name: Data Structures and Algorithms
+    topics:
+      - Arrays and linked lists
+      - Stacks and queues
+      - Trees and BST
+      - Heaps
+      - Graphs
+      - Sorting
+      - Hashing and searching
+      - Dynamic programming
+
+marks:
+  easy: 2
+  medium: 5
+  hard: 10
