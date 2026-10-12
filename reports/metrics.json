@@ -1,0 +1,265 @@
+{
+  "perplexity": {
+    "LSTM": {
+      "val": 3.81,
+      "test": 4.02
+    },
+    "Trigram": {
+      "val": 10.17,
+      "test": 9.34
+    }
+  },
+  "summary": {
+    "LSTM raw": {
+      "novelty": {
+        "mean": 0.371,
+        "std": 0.0231
+      },
+      "distinct_1": {
+        "mean": 0.0529,
+        "std": 0.0004
+      },
+      "distinct_2": {
+        "mean": 0.2198,
+        "std": 0.0043
+      },
+      "self_bleu": {
+        "mean": 0.7603,
+        "std": 0.022
+      },
+      "relevance": {
+        "mean": 0.251,
+        "std": 0.0026
+      },
+      "topic_accuracy": {
+        "mean": 0.7993,
+        "std": 0.0117
+      },
+      "difficulty_accuracy": {
+        "mean": 0.9986,
+        "std": 0.0006
+      },
+      "pass_rate": {
+        "mean": 0.2243,
+        "std": 0.0105
+      },
+      "count": {
+        "mean": 1920.0,
+        "std": 0.0
+      }
+    },
+    "LSTM filtered": {
+      "novelty": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "distinct_1": {
+        "mean": 0.1562,
+        "std": 0.0028
+      },
+      "distinct_2": {
+        "mean": 0.4142,
+        "std": 0.0103
+      },
+      "self_bleu": {
+        "mean": 0.5336,
+        "std": 0.0303
+      },
+      "relevance": {
+        "mean": 0.2666,
+        "std": 0.0008
+      },
+      "topic_accuracy": {
+        "mean": 0.8599,
+        "std": 0.02
+      },
+      "difficulty_accuracy": {
+        "mean": 0.9984,
+        "std": 0.0023
+      },
+      "pass_rate": {
+        "mean": 0.2243,
+        "std": 0.0105
+      },
+      "count": {
+        "mean": 430.6667,
+        "std": 20.0721
+      }
+    },
+    "Trigram raw": {
+      "novelty": {
+        "mean": 0.6059,
+        "std": 0.0306
+      },
+      "distinct_1": {
+        "mean": 0.0586,
+        "std": 0.0013
+      },
+      "distinct_2": {
+        "mean": 0.2317,
+        "std": 0.011
+      },
+      "self_bleu": {
+        "mean": 0.7299,
+        "std": 0.0343
+      },
+      "relevance": {
+        "mean": 0.2704,
+        "std": 0.0051
+      },
+      "topic_accuracy": {
+        "mean": 0.9255,
+        "std": 0.0123
+      },
+      "difficulty_accuracy": {
+        "mean": 0.7281,
+        "std": 0.0021
+      },
+      "pass_rate": {
+        "mean": 0.2842,
+        "std": 0.0098
+      },
+      "count": {
+        "mean": 1920.0,
+        "std": 0.0
+      }
+    },
+    "Trigram filtered": {
+      "novelty": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "distinct_1": {
+        "mean": 0.1269,
+        "std": 0.0023
+      },
+      "distinct_2": {
+        "mean": 0.3604,
+        "std": 0.0102
+      },
+      "self_bleu": {
+        "mean": 0.558,
+        "std": 0.0153
+      },
+      "relevance": {
+        "mean": 0.3003,
+        "std": 0.0035
+      },
+      "topic_accuracy": {
+        "mean": 0.961,
+        "std": 0.0025
+      },
+      "difficulty_accuracy": {
+        "mean": 0.9901,
+        "std": 0.0048
+      },
+      "pass_rate": {
+        "mean": 0.2842,
+        "std": 0.0098
+      },
+      "count": {
+        "mean": 545.6667,
+        "std": 18.8385
+      }
+    }
+  },
+  "real_test": {
+    "novelty": 1.0,
+    "distinct_1": 0.22375690607734808,
+    "distinct_2": 0.5125628140703518,
+    "self_bleu": 0.4522288551396882,
+    "relevance": 0.24207088200590113,
+    "topic_accuracy": 0.8463768115942029,
+    "difficulty_accuracy": 0.991304347826087
+  },
+  "classifier_ceiling": {
+    "topic_accuracy": 0.8464,
+    "difficulty_accuracy": 0.9913
+  },
+  "ablations": [
+    {
+      "variant": "temperature 0.6",
+      "val_ppl": 3.81,
+      "novelty": 0.2286,
+      "distinct_1": 0.0499,
+      "distinct_2": 0.1703,
+      "self_bleu": 0.8344,
+      "relevance": 0.2717,
+      "topic_accuracy": 0.8641,
+      "difficulty_accuracy": 1.0,
+      "pass_rate": 0.1469
+    },
+    {
+      "variant": "temperature 0.8",
+      "val_ppl": 3.81,
+      "novelty": 0.3568,
+      "distinct_1": 0.0531,
+      "distinct_2": 0.2144,
+      "self_bleu": 0.7881,
+      "relevance": 0.2473,
+      "topic_accuracy": 0.7828,
+      "difficulty_accuracy": 0.9984,
+      "pass_rate": 0.2161
+    },
+    {
+      "variant": "temperature 1.0",
+      "val_ppl": 3.81,
+      "novelty": 0.4901,
+      "distinct_1": 0.0534,
+      "distinct_2": 0.2552,
+      "self_bleu": 0.7188,
+      "relevance": 0.2243,
+      "topic_accuracy": 0.7052,
+      "difficulty_accuracy": 0.9979,
+      "pass_rate": 0.2698
+    },
+    {
+      "variant": "hidden size 128",
+      "val_ppl": 5.05,
+      "novelty": 0.7292,
+      "distinct_1": 0.0378,
+      "distinct_2": 0.1299,
+      "self_bleu": 0.9431,
+      "relevance": 0.1513,
+      "topic_accuracy": 0.1927,
+      "difficulty_accuracy": 0.9969,
+      "pass_rate": 0.2167
+    },
+    {
+      "variant": "hidden size 512",
+      "val_ppl": 3.92,
+      "novelty": 0.3719,
+      "distinct_1": 0.0524,
+      "distinct_2": 0.2209,
+      "self_bleu": 0.762,
+      "relevance": 0.2586,
+      "topic_accuracy": 0.8224,
+      "difficulty_accuracy": 1.0,
+      "pass_rate": 0.2375
+    },
+    {
+      "variant": "dropout 0.4",
+      "val_ppl": 3.82,
+      "novelty": 0.3625,
+      "distinct_1": 0.0519,
+      "distinct_2": 0.2025,
+      "self_bleu": 0.7987,
+      "relevance": 0.24,
+      "topic_accuracy": 0.726,
+      "difficulty_accuracy": 1.0,
+      "pass_rate": 0.2182
+    },
+    {
+      "variant": "no control tokens",
+      "val_ppl": 5.93,
+      "novelty": 0.25,
+      "distinct_1": 0.0054,
+      "distinct_2": 0.0073,
+      "self_bleu": 1.0,
+      "relevance": 0.1097,
+      "topic_accuracy": 0.0312,
+      "difficulty_accuracy": 0.3333,
+      "pass_rate": 0.0125
+    }
+  ]
+}
