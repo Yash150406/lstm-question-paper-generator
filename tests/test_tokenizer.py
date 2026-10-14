@@ -24,6 +24,7 @@ def test_punctuation_is_its_own_token():
     "Find the network address for 192.168.10.37/27.",
     "Explain the 0/1 knapsack problem using dynamic programming.",
     "Compare SCAN, C SCAN and LOOK.",
+    "What is a thread? Give one example.",
 ])
 def test_round_trip_restores_text(question, acronyms):
     assert detokenize(tokenize(question), acronyms) == question

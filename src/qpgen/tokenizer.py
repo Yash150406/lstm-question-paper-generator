@@ -18,6 +18,7 @@ SPACING = [
     (re.compile(r"' (s|t)\b"), r"'\1"),         # Banker's
     (re.compile(r"(\d)\. (\d)"), r"\1.\2"),     # 192.168.1.0, 802.11
 ]
+SENTENCE_START = re.compile(r"([.?!] )([a-z])")    # "thread? give" -> "thread? Give"
 
 
 def tokenize(text: str) -> list[str]:
@@ -32,6 +33,7 @@ def detokenize(tokens: list[str], acronyms: dict[str, str] | None = None) -> str
     text = " ".join(words)
     for pattern, repl in SPACING:
         text = pattern.sub(repl, text)
+    text = SENTENCE_START.sub(lambda m: m.group(1) + m.group(2).upper(), text)
     return text[:1].upper() + text[1:]
 
 
