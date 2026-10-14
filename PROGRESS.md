@@ -143,10 +143,10 @@ Result (all from `reports/metrics.md`):
 Check: `reports/` holds every expected file.
 
 ## Phase 11: Report and polish
-- [ ] Finish `README.md`
-- [ ] Fill in the report outline
+- [x] Finish `README.md`
+- [x] Fill in the report outline
 - [ ] Clean run: new venv, then `make data`, `make train`, `make eval`, `make test`
-- [ ] Screenshots of the app and a sample paper
+- [x] Screenshots of the app and a sample paper
 
 Check: every acceptance test and final checklist item holds.
 
@@ -235,3 +235,9 @@ Each set scores 200 seeded hypotheses against all the other questions in the set
 
 **2026-10-12. Eighth filter: phrase check.**
 After the copy filter, the questions that survive are novel but often glue two topics into a term that does not exist, like "relational cover" or "archival dependency". The phrase check rejects a generated question if any pair of adjacent words never appears in a training question. Neither planned fix for copying helped (dropout 0.4 left novelty at 0.36, hidden size 128 lost the topic), and allowing training copies would have filled papers with questions the model had already seen. The check is skipped for bank and notes questions, and can be turned off with `filters.check_phrases`.
+
+**2026-10-12. The report is kept out of the repo.**
+The report follows the outline (introduction, background, dataset, method, experiments, results, limitations, conclusion, references, sample paper) and is submitted separately, so it is not committed. Its numbers are read from `reports/`. Human ratings and a check of each reference are still to do.
+
+**2026-10-13. LSTM layers are stacked by hand.**
+A fresh clone showed `make train` failing on the GPU: training finished, then the process crashed on exit (0xC0000409, issue #3). The cause is cuDNN's inter-layer dropout in `nn.LSTM(num_layers=2, dropout=0.3)` under torch 2.14.1+cu130 on Windows; five lines of plain PyTorch reproduce it, and `os._exit` does not avoid it because the crash is in native teardown. The model now stacks one single-layer `nn.LSTM` per layer with its own dropout between them, which is the same maths and never creates that dropout state. Turning cuDNN off also worked but was twice as slow. The change draws dropout masks differently, so the model and every report were regenerated. Phase results above are as measured at the time. The regenerated numbers (all in `reports/`): best epoch 75, validation perplexity 3.84 and test 4.05, 44 s on the GPU and 261 s on the CPU, repeat GPU runs still identical. LSTM raw novelty 0.38, pass rate 12%, filtered topic accuracy 0.90; the trigram numbers are unchanged. Ablations tell the same story as before.
