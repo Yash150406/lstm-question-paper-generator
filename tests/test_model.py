@@ -42,7 +42,7 @@ def test_tying_needs_matching_sizes(cfg):
 def test_forget_gate_bias(cfg):
     model = make_model(cfg, 100)
     h = cfg.model["hidden_dim"]
-    bias = model.lstm.bias_ih_l0 + model.lstm.bias_hh_l0
+    bias = model.lstms[0].bias_ih_l0 + model.lstms[0].bias_hh_l0
     assert torch.all(bias[h:2 * h] == cfg.model["forget_bias"])
     assert torch.all(bias[:h] == 0)
 
@@ -87,3 +87,12 @@ def test_overfits_32_questions(cfg):
         loss.backward()
         opt.step()
     assert loss.item() < 0.05
+
+
+def test_hidden_state_carries_over_steps(cfg):
+    model = make_model(cfg, 50).eval()
+    x = torch.randint(0, 50, (2, 6))
+    full, _ = model(x)
+    first, hidden = model(x[:, :4])
+    rest, _ = model(x[:, 4:], hidden)
+    assert torch.allclose(full, torch.cat([first, rest], dim=1), atol=1e-5)

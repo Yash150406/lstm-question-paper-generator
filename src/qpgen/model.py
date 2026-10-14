@@ -13,7 +13,11 @@ class QuestionLSTM(nn.Module):
             raise ValueError("tie_weights needs embed_dim == hidden_dim")
         self.embedding = nn.Embedding(vocab_size, embed_dim)
         self.drop = nn.Dropout(dropout)
-        self.lstm = nn.LSTM(embed_dim, hidden_dim, num_layers, dropout=dropout, batch_first=True)
+        # One single-layer LSTM per layer with our own dropout between them. nn.LSTM(dropout=...)
+        # does the same maths, but its cuDNN dropout state crashes the process on exit after GPU
+        # training with torch 2.14.1+cu130 on Windows (issue #3).
+        self.lstms = nn.ModuleList(nn.LSTM(embed_dim if i == 0 else hidden_dim, hidden_dim, batch_first=True)
+                                   for i in range(num_layers))
         self.decoder = nn.Linear(hidden_dim, vocab_size)
         if tie_weights:
             self.decoder.weight = self.embedding.weight
@@ -28,14 +32,23 @@ class QuestionLSTM(nn.Module):
         """Uniform embeddings, zero decoder bias, forget gate bias set to forget_bias."""
         nn.init.uniform_(self.embedding.weight, -init_range, init_range)
         nn.init.zeros_(self.decoder.bias)
-        for name, param in self.lstm.named_parameters():
-            if name.startswith("bias"):
+        for name, param in self.lstms.named_parameters():
+            if "bias" in name:
                 nn.init.zeros_(param)
-                if name.startswith("bias_ih"):
+                if "bias_ih" in name:
                     # PyTorch gate order is input, forget, cell, output.
                     param.data[hidden_dim:2 * hidden_dim] = forget_bias
 
     def forward(self, x: torch.Tensor, hidden: tuple | None = None) -> tuple[torch.Tensor, tuple]:
-        """x is (batch, seq_len) token ids. Returns logits (batch, seq_len, vocab) and hidden."""
-        out, hidden = self.lstm(self.drop(self.embedding(x)), hidden)
-        return self.decoder(self.drop(out)), hidden
+        """x is (batch, seq_len) token ids. Returns logits (batch, seq_len, vocab) and hidden,
+        where hidden is (h, c), each (num_layers, batch, hidden_dim)."""
+        out = self.drop(self.embedding(x))
+        hs, cs = [], []
+        for i, lstm in enumerate(self.lstms):
+            state = None if hidden is None else (hidden[0][i:i + 1], hidden[1][i:i + 1])
+            out, (h, c) = lstm(out, state)
+            hs.append(h)
+            cs.append(c)
+            if i < len(self.lstms) - 1:
+                out = self.drop(out)      # dropout between layers
+        return self.decoder(self.drop(out)), (torch.cat(hs), torch.cat(cs))
