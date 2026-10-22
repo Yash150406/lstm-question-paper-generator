@@ -27,6 +27,8 @@ CREATIVITY = {"Safe": 0.6, "Balanced": 0.8, "Creative": 1.0}   # sampling temper
 LEVELS = ["auto", "easy", "medium", "hard"]
 
 st.set_page_config(page_title="Question Paper Generator", layout="wide")
+# Wide enough for all four columns of the pattern table; set_page_config has no sidebar width option.
+st.markdown('<style>[data-testid="stSidebar"] {min-width: 440px;}</style>', unsafe_allow_html=True)
 cfg = load_config(CONFIG)
 
 
