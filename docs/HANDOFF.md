@@ -4,7 +4,7 @@ Last updated 2026-10-22.
 
 ## Status
 
-All 11 build phases are done and checked off in [PROGRESS.md](../PROGRESS.md). The pipeline runs end to end: `make data`, `make train`, `make eval`, `make test`, the CLI and the Streamlit app. Every number in the README comes from `reports/`.
+All 12 build phases are done and checked off in [PROGRESS.md](../PROGRESS.md). The pipeline runs end to end: `make data`, `make train`, `make eval`, `make test`, the CLI and the Streamlit app. Every number in the README comes from `reports/`.
 
 ## Done
 
@@ -28,7 +28,13 @@ All 11 build phases are done and checked off in [PROGRESS.md](../PROGRESS.md). T
 - The LSTM repeats training questions a lot (raw novelty 0.38). Dropout 0.4 and hidden size 128 did not fix it. The copy filter and phrase check keep papers clean, at the cost of a 12% pass rate and about 5% of paper questions coming from the bank.
 - The trigram baseline beats the LSTM on novelty, pass rate and topic accuracy. This is reported as is.
 - Difficulty accuracy is near 1 because labels follow the opening verb.
+- Bloom levels come from a verb rule, not a model, so a question that opens with an unlisted verb gets BL2.
+- A topic added in the app is only as good as the questions pasted in, and retraining overwrites the training reports in `reports/`.
 
 ## Next step
 
 Collect the human ratings, add the table to the report and the README results section, and rerun `make eval` only if the config changes.
+
+## Ideas not built
+
+From similar projects on GitHub (amfoss/qujini, priyam-hub/TestPaperPro, Niraj-Kamdar/question-paper-generator): a frontend redesign with a print-style paper preview, several paper sets in one go, sub-parts such as Q1 (a) and (b), an answer key, and a question bank browser for editing saved questions.
