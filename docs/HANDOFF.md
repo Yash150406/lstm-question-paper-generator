@@ -1,6 +1,6 @@
 # Handoff
 
-Last updated 2026-10-14.
+Last updated 2026-10-22.
 
 ## Status
 
@@ -15,6 +15,7 @@ All 11 build phases are done and checked off in [PROGRESS.md](../PROGRESS.md). T
 - Paper builder with three presets, DOCX, PDF and JSON export, regenerate, fill and edit.
 - Papers from uploaded notes, pasted text or a typed chapter name.
 - Evaluation over three seeds with ablations, plots, samples and a blind rating sheet.
+- Phase 12: custom paper patterns with any N of M, Bloom levels and CO mapping on every question, an Add a topic page with in-app retrain, and the app split into three pages.
 - Bugs #1, #2 and #3 found, fixed and closed on GitHub. #3 was a GPU crash on exit after training, fixed by stacking the LSTM layers by hand.
 
 ## Pending

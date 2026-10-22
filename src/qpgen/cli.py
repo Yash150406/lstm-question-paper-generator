@@ -6,7 +6,7 @@ from functools import partial
 from qpgen.config import DEFAULT_CONFIG
 from qpgen.export import export
 from qpgen.filters import generate_questions, load_context
-from qpgen.paper import build_paper, spec_from_preset
+from qpgen.paper import build_paper, parse_pattern, preset_rows, spec_from_pattern
 from qpgen.upload import analyze_upload, read_upload
 
 
@@ -42,7 +42,8 @@ def cmd_paper(args: argparse.Namespace) -> int:
     subject, topics, weights, upload = resolve_topics(args, ctx)
     overrides = {k: v for k, v in (("institute", args.institute), ("exam_title", args.exam_title),
                                    ("duration_minutes", args.duration)) if v}
-    spec = spec_from_preset(cfg, subject, topics, args.preset, weights, **overrides)
+    rows = parse_pattern(args.pattern) if args.pattern else preset_rows(cfg, args.preset)
+    spec = spec_from_pattern(cfg, subject, topics, rows, weights, **overrides)
     paper = build_paper(spec, args.seed, cfg, partial(generate_questions, ctx=ctx, upload=upload))
     formats = ["docx", "pdf", "json"] if args.format == "all" else [args.format, "json"]
     for path in export(paper, cfg, cfg.subject_key(subject), list(dict.fromkeys(formats))):
@@ -71,6 +72,7 @@ def parser() -> argparse.ArgumentParser:
     pp.add_argument("--topics", help="comma separated, default is every topic of the subject")
     pp.add_argument("--from-file", help="PDF, .txt or .md notes, or a typed chapter name")
     pp.add_argument("--preset", default="balanced", choices=["balanced", "easy_heavy", "hard_heavy"])
+    pp.add_argument("--pattern", help="marks:questions[:attempt],... for example 2:10,5:6:4,10:2; overrides --preset")
     pp.add_argument("--seed", type=int, default=42)
     pp.add_argument("--format", default="all", choices=["docx", "pdf", "json", "all"])
     pp.add_argument("--institute")

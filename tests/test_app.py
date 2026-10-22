@@ -34,3 +34,23 @@ def test_generate_paper_end_to_end(monkeypatch):
     assert len(at.text_input) >= 18 + 2          # 18 questions plus institute and exam title
     labels = [b.label for b in at.get("download_button")]
     assert labels == ["Download DOCX", "Download PDF", "Download JSON"]
+
+
+def page_script(index: int) -> str:
+    """The app with only one of its pages, since AppTest cannot switch to a function page."""
+    app = str(APP)
+    return (f"import streamlit as st\n"
+            f"st.__dict__.setdefault('_orig_nav', st.navigation)\n"
+            f"st.navigation = lambda pages, **kw: st._orig_nav([pages[{index}]], **kw)\n"
+            f"exec(compile(open({app!r}, encoding='utf-8').read(), {app!r}, 'exec'))\n")
+
+
+def test_add_topic_page_refuses_bad_input(monkeypatch):
+    monkeypatch.delenv("QPGEN_CONFIG", raising=False)
+    at = AppTest.from_string(page_script(1), default_timeout=120).run()
+    at.text_input[0].input("Deadlocks").run()
+    at.text_area[0].input("1. Define a deadlock in operating systems.").run()
+    assert not at.exception
+    warnings = " ".join(w.value for w in at.warning)
+    assert "already exists" in warnings and "at least 30" in warnings
+    assert [b.disabled for b in at.button if b.label == "Save topic"] == [True]

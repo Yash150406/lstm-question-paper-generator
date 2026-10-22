@@ -10,7 +10,8 @@ Generates exam papers for four CSE subjects (DBMS, Operating Systems, Computer N
 2. **Model.** A 2-layer LSTM (256 units, tied embeddings, about 1.3M parameters) learns to continue a sequence that starts with control tokens, for example `<bos> <subj_dbms> <topic_normalization> <diff_medium>`.
 3. **Sampling.** Temperature 0.8 and top-k 40, with special tokens blocked and repeated trigrams banned.
 4. **Filters.** Format, cleanliness, ending word, novelty (not a copy of a training question), near duplicates, topic relevance (TF-IDF cosine to the topic centroid), difficulty (TF-IDF logistic regression) and a phrase check (every word pair must appear in a real question). If too few survive, it samples again, relaxes thresholds, then fills from the real bank.
-5. **Paper.** Questions are spread over the chosen topics by weight and checked for total marks and repeats.
+5. **Paper.** You set the pattern: how many questions for each mark value, and optionally "answer any N of M". Each mark value maps to a difficulty (1 to 3 marks easy, 4 to 7 medium, 8 and up hard, changeable per row). Questions are spread over the chosen topics by weight and checked for total marks and repeats.
+6. **Bloom level and CO.** Every question gets a Bloom's taxonomy level (BL1 Remember to BL6 Create) from its opening verb, and a course outcome from the topic to CO map in `config/subjects_topics.yaml`. Both are printed next to the marks.
 
 Settings for all of this live in `config/default.yaml`.
 
@@ -51,13 +52,18 @@ Generate questions or a paper from the command line:
 python -m qpgen.cli generate --subject DBMS --topic Normalization --difficulty medium -n 5 --seed 42
 python -m qpgen.cli paper --subject DBMS --topics "Normalization,SQL queries" --preset balanced --seed 42 --format docx
 python -m qpgen.cli paper --from-file notes.pdf --preset balanced
+python -m qpgen.cli paper --subject OS --pattern 1:10,5:6:4,10:3:2
 ```
 
-Papers go to `outputs/`. Presets are `balanced` (10 x 2, 6 x 5, 2 x 10), `easy_heavy` and `hard_heavy`, all 70 marks.
+Papers go to `outputs/`. Presets are `balanced` (10 x 2, 6 x 5, 2 x 10), `easy_heavy` and `hard_heavy`, all 70 marks. `--pattern` takes `marks:questions[:attempt]` for each section, so `5:6:4` prints six 5-mark questions and asks for any four.
 
 ## App
 
-The sidebar takes a subject and topics, or uploaded notes, plus preset, duration, institute, exam title, seed and temperature. The Paper tab lets you regenerate, edit or remove any question before downloading. The other tabs show raw samples with the reason each rejected one failed, and the evaluation report.
+The app has three pages.
+
+- **Make a paper.** The sidebar takes a subject and topics (or uploaded notes), the CO for each topic, and the paper pattern as a table of marks, questions printed, questions to attempt and difficulty. A preset fills the table and the total updates as you edit. **Paper variant #** is the random seed: the same number and settings give the same paper, so Set A and Set B are just two numbers. **Creativity** is the sampling temperature: Safe (0.6) stays close to real questions, Creative (1.0) writes newer ones with more mistakes. Each question can be regenerated, edited or removed before downloading.
+- **Add a topic.** Paste at least 30 questions for a new topic (3 or more each of easy, medium and hard), check the guessed difficulties, save, then press Retrain. Retraining rebuilds the dataset, the LSTM and the classifiers (about a minute on a GPU) and overwrites the training reports.
+- **Model insights.** Raw samples with the reason each rejected one failed, and the evaluation report.
 
 ![App](docs/images/app.jpg)
 
@@ -93,6 +99,6 @@ tests/           one test file per module
 reports/         training logs, metrics, plots, samples, rating sheet
 ```
 
-Your own syllabus or past paper questions can go in `data/raw/student_questions.csv` with the columns `subject,topic,difficulty,question` (subject spelled as above, for example `Operating Systems`). `make data` picks them up.
+Your own syllabus or past paper questions can go in `data/raw/student_questions.csv` with the columns `subject,topic,difficulty,question` (subject spelled as above, for example `Operating Systems`). `make data` picks them up. A new topic must also be listed in `config/subjects_topics.yaml`; the Add a topic page does both.
 
 Progress and design decisions are in [PROGRESS.md](PROGRESS.md).

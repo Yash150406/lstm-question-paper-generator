@@ -10,7 +10,7 @@ HAS_MODEL = load_config().path("checkpoint").exists()
 
 def test_parser_defaults():
     args = parser().parse_args(["paper", "--subject", "DBMS"])
-    assert args.preset == "balanced" and args.seed == 42 and args.format == "all"
+    assert args.preset == "balanced" and args.seed == 42 and args.format == "all" and args.pattern is None
 
 
 def test_paper_needs_subject_or_file():

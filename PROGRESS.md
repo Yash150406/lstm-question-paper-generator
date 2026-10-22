@@ -152,6 +152,19 @@ Result: a fresh clone from GitHub, set up with only the README steps in a new vi
 
 Check: every acceptance test and final checklist item holds.
 
+## Phase 12: Paper pattern, Bloom levels and topics
+- [x] Custom pattern: marks, questions printed, questions to attempt and difficulty per section, in the app and as `--pattern`
+- [x] "Answer any N of M" sections, totals counted from the attempted questions
+- [x] Bloom level per question from the opening verb, CO per topic from config and editable per paper
+- [x] CO and BL columns in DOCX and PDF, CO-wise marks in the app and JSON
+- [x] Seed and temperature shown as Paper variant # and Creativity
+- [x] App split into Make a paper, Add a topic and Model insights pages
+- [x] Add a topic page with checks, save and an in-app retrain
+
+Result: 149 tests pass. A 1:6, 5:5:3, 8:2:1 DBMS paper totals 29 marks and prints CO and BL columns with "Answer any 3 of 5". In a temporary copy of the config, adding a 90-question Caching topic to OS and retraining took 72 s on the GPU (best val perplexity 3.95), and the model then wrote Caching questions at all three levels ("Define cache miss in operating systems.", "Analyze the cost of cache miss in detail."). The committed model and reports were not touched.
+
+Check: a custom pattern paper builds and exports with the right total, and a new topic can be added and used after a retrain.
+
 ## Decisions
 
 **2026-10-12. `data/processed/` is not committed.**
@@ -243,3 +256,18 @@ The report follows the outline (introduction, background, dataset, method, exper
 
 **2026-10-13. LSTM layers are stacked by hand.**
 A fresh clone showed `make train` failing on the GPU: training finished, then the process crashed on exit (0xC0000409, issue #3). The cause is cuDNN's inter-layer dropout in `nn.LSTM(num_layers=2, dropout=0.3)` under torch 2.14.1+cu130 on Windows; five lines of plain PyTorch reproduce it, and `os._exit` does not avoid it because the crash is in native teardown. The model now stacks one single-layer `nn.LSTM` per layer with its own dropout between them, which is the same maths and never creates that dropout state. Turning cuDNN off also worked but was twice as slow. The change draws dropout masks differently, so the model and every report were regenerated. Phase results above are as measured at the time. The regenerated numbers (all in `reports/`): best epoch 75, validation perplexity 3.84 and test 4.05, 44 s on the GPU and 261 s on the CPU, repeat GPU runs still identical. LSTM raw novelty 0.38, pass rate 12%, filtered topic accuracy 0.90; the trigram numbers are unchanged. Ablations tell the same story as before.
+
+**2026-10-22. Paper total comes from the pattern.**
+Total marks are the sum of questions to attempt times marks for each section, so a custom pattern can total anything. The presets still add up to 70, and `paper.total_marks` is kept only to check that. In an "any N of M" section all M questions are generated and printed.
+
+**2026-10-22. Difficulty follows marks unless set.**
+The model only knows easy, medium and hard, so each mark value is mapped with `paper.difficulty_by_marks` (up to 3 marks easy, up to 7 medium, above that hard). The pattern table can override it per row.
+
+**2026-10-22. Bloom level comes from the opening verb.**
+The same idea as the difficulty labels: design is BL6, evaluate or justify BL5, compare or differentiate BL4, solve, write a query or implement BL3, define or list BL1, and anything else BL2. It is a rule, not a model, and is recomputed when a question is edited.
+
+**2026-10-22. CO map lives in subjects_topics.yaml.**
+Each subject maps every topic to a course outcome, two topics per CO by default. The app shows the map as an editable table, and the edited map is stored on the paper spec.
+
+**2026-10-22. New topics need a retrain.**
+A topic is a control token, so the LSTM cannot write for a topic it has not been trained on. The Add a topic page saves at least 30 questions to `student_questions.csv`, adds the topic to `subjects_topics.yaml` as text so the comments stay, and runs the dataset build, training and classifiers. Until then the topic is listed as needing a retrain and cannot be picked. A small topic can miss the validation split, so its relevance threshold falls back to its training questions.
