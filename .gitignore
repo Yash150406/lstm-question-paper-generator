@@ -6,3 +6,4 @@ __pycache__/
 artifacts/
 outputs/
 data/processed/
+reports/loss_curve_*.png
