@@ -38,6 +38,7 @@ def test_docx_opens_and_has_layout(paper, out_cfg):
     assert cells[:4] == ["Question", "CO", "BL", "Marks"]
     assert cells[4].startswith("1. ") and cells[5] == "CO1" and cells[6].startswith("BL")
     assert not any("generated" in c for c in cells)
+    assert doc.styles["Normal"].font.name == "Times New Roman"
 
 
 def test_any_n_of_m_title(out_cfg):
@@ -48,7 +49,8 @@ def test_any_n_of_m_title(out_cfg):
 
 def test_pdf_is_a_pdf(paper, out_cfg):
     path = export(paper, out_cfg, "dbms", ["pdf"], stamp="t")[0]
-    assert path.read_bytes()[:5] == b"%PDF-"
+    data = path.read_bytes()
+    assert data[:5] == b"%PDF-" and b"Times-Roman" in data and b"Times-BoldItalic" in data
 
 
 def test_json_has_spec_seed_and_scores(paper, out_cfg):

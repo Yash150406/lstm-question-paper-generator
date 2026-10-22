@@ -19,6 +19,7 @@ from qpgen.paper import co_marks
 
 HEADERS = ["Question", "CO", "BL", "Marks"]
 WIDTHS = [12.8, 1.4, 1.3, 1.5]   # cm, fits A4 with 2 cm margins
+SERIF_DOCX = "Times New Roman"
 
 
 def numbered(paper: dict) -> list[tuple[dict, list[tuple[int, dict]]]]:
@@ -55,6 +56,8 @@ def row(n: int, q: dict) -> list[str]:
 def write_docx(paper: dict, path: Path) -> Path:
     """Header block, instructions, section headings and numbered questions with marks on the right."""
     doc = Document()
+    for style in ("Normal", "Heading 2"):     # Times, like exam papers and the app's preview
+        doc.styles[style].font.name = SERIF_DOCX
     for i, line in enumerate(header_lines(paper)):
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -86,8 +89,10 @@ def write_docx(paper: dict, path: Path) -> Path:
 def write_pdf(paper: dict, path: Path) -> Path:
     """Same layout as the DOCX, built with reportlab."""
     styles = getSampleStyleSheet()
+    for name in ("Normal", "Heading3"):        # Times, like exam papers and the app's preview
+        styles[name].fontName = "Times-BoldItalic" if name == "Heading3" else "Times-Roman"
     center = ParagraphStyle("center", parent=styles["Normal"], alignment=1, fontSize=11, leading=15)
-    title = ParagraphStyle("title", parent=center, fontName="Helvetica-Bold", fontSize=14, leading=18)
+    title = ParagraphStyle("title", parent=center, fontName="Times-Bold", fontSize=14, leading=18)
     inst, exam, info = header_lines(paper)
     story = [Paragraph(inst, title), Paragraph(f"<b>{exam}</b>", center), Paragraph(info, center), Spacer(1, 12)]
     for s, rows in numbered(paper):
@@ -97,7 +102,8 @@ def write_pdf(paper: dict, path: Path) -> Path:
         data = [HEADERS] + [[Paragraph(r[0], styles["Normal"]), *r[1:]] for r in (row(n, q) for n, q in rows)]
         table = Table(data, colWidths=[w * cm for w in WIDTHS], repeatRows=1)
         table.setStyle(TableStyle([("ALIGN", (1, 0), (-1, -1), "CENTER"), ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                                   ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                                   ("FONTNAME", (0, 0), (-1, -1), "Times-Roman"),
+                                   ("FONTNAME", (0, 0), (-1, 0), "Times-Bold"),
                                    ("LINEBELOW", (0, 0), (-1, 0), 0.5, colors.black),
                                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6)]))
         story += [table, Spacer(1, 8)]
