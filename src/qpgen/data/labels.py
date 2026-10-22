@@ -20,3 +20,24 @@ def label_difficulty(question: str) -> str:
         if any(text.startswith(opener) for opener in openers):
             return level
     return DEFAULT
+
+# Bloom's taxonomy level from the opening verb. Checked top to bottom, first match wins.
+BLOOM_RULES = {
+    "BL6": ["design", "develop", "propose", "create"],
+    "BL5": ["evaluate", "justify", "prove", "assess"],
+    "BL4": ["analyze", "analyse", "differentiate", "compare", "distinguish", "contrast"],
+    "BL3": ["solve", "calculate", "find", "compute", "implement", "construct", "draw", "derive",
+            "apply", "illustrate", "write a", "write an", "write sql", "convert", "trace", "show"],
+    "BL1": ["what is", "what are", "define", "list", "state", "name", "write the full form of",
+            "expand", "mention", "which", "give", "recall"],
+}
+BLOOM_DEFAULT = "BL2"   # Understand: explain, describe, discuss and anything else
+
+
+def bloom_level(question: str) -> str:
+    """Return BL1 (Remember) to BL6 (Create) based on the opening words."""
+    text = question.strip().lower()
+    for level, openers in BLOOM_RULES.items():
+        if any(text.startswith(opener) for opener in openers):
+            return level
+    return BLOOM_DEFAULT

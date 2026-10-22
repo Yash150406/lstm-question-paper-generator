@@ -11,6 +11,15 @@ subjects:
       - Concurrency control
       - Indexing and B+ trees
       - Recovery
+    co:   # course outcome for each topic, editable per paper in the app
+      ER model: CO1
+      Relational model and keys: CO1
+      SQL queries: CO2
+      Normalization: CO2
+      Transactions and ACID: CO3
+      Concurrency control: CO3
+      Indexing and B+ trees: CO4
+      Recovery: CO4
   os:
     name: Operating Systems
     topics:
@@ -22,6 +31,15 @@ subjects:
       - Virtual memory and paging
       - File systems
       - Disk scheduling
+    co:   # course outcome for each topic, editable per paper in the app
+      Process management: CO1
+      CPU scheduling: CO1
+      Synchronization: CO2
+      Deadlocks: CO2
+      Memory management: CO3
+      Virtual memory and paging: CO3
+      File systems: CO4
+      Disk scheduling: CO4
   cn:
     name: Computer Networks
     topics:
@@ -33,6 +51,15 @@ subjects:
       - Routing algorithms
       - Transport layer
       - Application layer protocols
+    co:   # course outcome for each topic, editable per paper in the app
+      OSI and TCP/IP models: CO1
+      Data link layer: CO1
+      Error detection: CO2
+      MAC protocols: CO2
+      IP addressing and subnetting: CO3
+      Routing algorithms: CO3
+      Transport layer: CO4
+      Application layer protocols: CO4
   dsa:
     name: Data Structures and Algorithms
     topics:
@@ -44,6 +71,15 @@ subjects:
       - Sorting
       - Hashing and searching
       - Dynamic programming
+    co:   # course outcome for each topic, editable per paper in the app
+      Arrays and linked lists: CO1
+      Stacks and queues: CO1
+      Trees and BST: CO2
+      Heaps: CO2
+      Graphs: CO3
+      Sorting: CO3
+      Hashing and searching: CO4
+      Dynamic programming: CO4
 
 marks:
   easy: 2

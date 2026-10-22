@@ -55,7 +55,9 @@ def fit_scorer(cfg: Config, train: pd.DataFrame, val: pd.DataFrame) -> Scorer:
     scorer = Scorer(vec, topics, centroids, {}, clf)
     pct = cfg.filters["relevance_percentile"]
     for t in topics:
-        scores = scorer.relevance(val.loc[val["topic"] == t, "question"].tolist(), t)
+        # A small topic added in the app can miss the validation split; fall back to its training questions.
+        held = val.loc[val["topic"] == t, "question"].tolist() or train.loc[train["topic"] == t, "question"].tolist()
+        scores = scorer.relevance(held, t)
         scorer.thresholds[t] = float(np.percentile(scores, pct))
     return scorer
 

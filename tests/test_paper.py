@@ -4,8 +4,8 @@ from collections import Counter
 import pytest
 
 from qpgen.config import load_config
-from qpgen.paper import (allocate, build_paper, check_paper, fill_section, replace_question,
-                         spec_from_preset)
+from qpgen.paper import (allocate, build_paper, check_paper, co_marks, difficulty_for_marks, fill_section,
+                         parse_pattern, replace_question, spec_from_pattern, spec_from_preset)
 
 CFG = load_config()
 TOPICS = CFG.subjects["dbms"]["topics"]
@@ -108,3 +108,48 @@ def test_fill_section_restores_count_after_removal():
     fill_section(paper, CFG, stub_generate, 0, seed=500)
     check_paper(paper)
     assert sum(q["topic"] == removed["topic"] for q in paper["sections"][0]["questions"]) >= 1
+
+
+@pytest.mark.parametrize("marks, level", [(1, "easy"), (3, "easy"), (4, "medium"), (7, "medium"), (8, "hard"), (15, "hard")])
+def test_difficulty_follows_marks(marks, level):
+    assert difficulty_for_marks(CFG, marks) == level
+
+
+def test_custom_pattern_with_any_n_of_m():
+    rows = [{"marks": 1, "count": 10}, {"marks": 5, "count": 6, "attempt": 4}, {"marks": 8, "count": 2, "difficulty": "medium"}]
+    spec = spec_from_pattern(CFG, "DBMS", TOPICS, rows)
+    assert [(s.name, s.difficulty, s.marks, s.count, s.attempt) for s in spec.sections] == [
+        ("A", "easy", 1, 10, 10), ("B", "medium", 5, 6, 4), ("C", "medium", 8, 2, 2)]
+    assert spec.total_marks == 10 + 20 + 16
+    assert spec.sections[1].instruction == "Answer any 4 of 6"
+    paper = build_paper(spec, 42, CFG, stub_generate)
+    assert [len(s["questions"]) for s in paper["sections"]] == [10, 6, 2]
+
+
+@pytest.mark.parametrize("rows", [[], [{"marks": 5, "count": 3, "attempt": 4}], [{"marks": 0, "count": 3}]])
+def test_bad_pattern_is_refused(rows):
+    with pytest.raises(ValueError):
+        spec_from_pattern(CFG, "DBMS", TOPICS, rows)
+
+
+def test_rows_with_no_questions_are_skipped():
+    spec = spec_from_pattern(CFG, "DBMS", TOPICS, [{"marks": 2, "count": 0}, {"marks": 5, "count": 2}])
+    assert [s.name for s in spec.sections] == ["A"] and spec.total_marks == 10
+
+
+def test_parse_pattern():
+    assert parse_pattern("2:10, 5:6:4") == [{"marks": 2, "count": 10, "attempt": 10}, {"marks": 5, "count": 6, "attempt": 4}]
+    with pytest.raises(ValueError):
+        parse_pattern("2x10")
+
+
+def test_questions_carry_co_and_bloom():
+    spec = spec_from_preset(CFG, "DBMS", TOPICS, "balanced", co_map={"Recovery": "CO9"})
+    paper = build_paper(spec, 42, CFG, stub_generate)
+    qs = [q for s in paper["sections"] for q in s["questions"]]
+    assert all(q["bloom"] == "BL2" for q in qs)          # stub questions all open with "Explain"
+    assert {q["co"] for q in qs if q["topic"] == "ER model"} == {"CO1"}
+    assert {q["co"] for q in qs if q["topic"] == "Recovery"} == {"CO9"}
+    assert sum(co_marks(paper).values()) == 70
+    replace_question(paper, CFG, stub_generate, 0, 0, seed=7)
+    assert paper["sections"][0]["questions"][0]["co"] == "CO1"

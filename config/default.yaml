@@ -32,6 +32,8 @@ data:
   max_words: 40
   near_dup_overlap: 0.8
   min_per_subject: 500
+  new_topic_min: 30            # questions needed to add a topic in the app
+  new_topic_min_per_level: 3   # of each difficulty
   split: [0.8, 0.1, 0.1]
   templates_per_concept: {easy: 2, medium: 2, hard: 1}
   use_mmlu: false
@@ -97,7 +99,8 @@ paper:
   institute: "MMCOE"
   exam_title: "Semester Examination"
   duration_minutes: 180
-  total_marks: 70
+  total_marks: 70        # every preset adds up to this
+  difficulty_by_marks: {easy: 3, medium: 7}   # highest marks for each level, anything above is hard
   presets:
     balanced:   {easy: 10, medium: 6, hard: 2}
     easy_heavy: {easy: 15, medium: 6, hard: 1}
