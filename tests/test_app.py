@@ -31,9 +31,18 @@ def test_generate_paper_end_to_end(monkeypatch):
     at = AppTest.from_file(APP, default_timeout=180).run()
     at.sidebar.button[0].click().run()
     assert not at.exception
-    assert len(at.text_input) >= 18 + 2          # 18 questions plus institute and exam title
+    lines = [m.value for m in at.markdown if m.value.startswith('<div class="q">')]
+    assert len(lines) == 18 and lines[0].startswith('<div class="q">1. ')
     labels = [b.label for b in at.get("download_button")]
     assert labels == ["Download DOCX", "Download PDF", "Download JSON"]
+
+    # Edit the first question in place: the pencil opens a text box, the tick saves it.
+    [b for b in at.button if (b.key or "").startswith("edit_")][0].click().run()
+    box = at.main.text_input[0]
+    box.input("Define a weak entity set with an example.").run()
+    [b for b in at.button if (b.key or "").startswith("save_")][0].click().run()
+    assert not at.exception and not at.main.text_input
+    assert any("1. Define a weak entity set with an example." in m.value for m in at.markdown)
 
 
 def page_script(index: int) -> str:
