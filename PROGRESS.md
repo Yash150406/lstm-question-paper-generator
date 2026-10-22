@@ -145,8 +145,10 @@ Check: `reports/` holds every expected file.
 ## Phase 11: Report and polish
 - [x] Finish `README.md`
 - [x] Fill in the report outline
-- [ ] Clean run: new venv, then `make data`, `make train`, `make eval`, `make test`
+- [x] Clean run: new venv, then `make data`, `make train`, `make eval`, `make test`
 - [x] Screenshots of the app and a sample paper
+
+Result: a fresh clone from GitHub, set up with only the README steps in a new virtual environment, ran `make data`, `make train`, `make eval` and `make test` with exit code 0 each. Training gave the same best epoch 75 and val perplexity 3.84, all 118 tests passed, and the regenerated `reports/metrics.md` was identical to the committed one. Still open outside the code: the human ratings and a check of the report's references.
 
 Check: every acceptance test and final checklist item holds.
 
