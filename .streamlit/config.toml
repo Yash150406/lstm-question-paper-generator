@@ -1,0 +1,16 @@
+# Exam hall look: cool grey hall, white paper, navy ink. Light only.
+[theme]
+base = "light"
+primaryColor = "#1f3a68"
+backgroundColor = "#eef0f3"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#1d2433"
+borderColor = "#c9ced8"
+showWidgetBorder = true
+baseRadius = "small"
+font = "sans-serif"
+headingFont = "'Times New Roman', Georgia, serif"
+
+[theme.sidebar]
+backgroundColor = "#f7f8fa"
+secondaryBackgroundColor = "#ffffff"

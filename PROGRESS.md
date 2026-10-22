@@ -271,3 +271,6 @@ Each subject maps every topic to a course outcome, two topics per CO by default.
 
 **2026-10-22. New topics need a retrain.**
 A topic is a control token, so the LSTM cannot write for a topic it has not been trained on. The Add a topic page saves at least 30 questions to `student_questions.csv`, adds the topic to `subjects_topics.yaml` as text so the comments stay, and runs the dataset build, training and classifiers. Until then the topic is listed as needing a retrain and cannot be picked. A small topic can miss the validation split, so its relevance threshold falls back to its training questions.
+
+**2026-10-23. Exam hall look for the app.**
+The app stays on Streamlit, restyled instead of rebuilt. A light theme in `.streamlit/config.toml` (grey page, white paper, navy controls), a step bar for Subject, Pattern, Review and Download that ticks off from the app's state, and the paper shown as a printed sheet in Times New Roman with refresh, edit and remove buttons on every line. Model details (origin and scores) moved into the edit button's tooltip so the sheet reads like the real paper. Alternatives were a React and FastAPI rebuild, which was several times the work, and a step-by-step wizard, which Streamlit's reruns would make slow. The exported PDF still uses Helvetica, so the preview font and the printed font differ.
